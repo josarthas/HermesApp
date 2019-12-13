@@ -9,8 +9,8 @@ async function asyncFunction() {
   let conn;
   try {
 	conn = await pool.getConnection();
-  const res = await conn.query("USE hermes");
-  console.log(res); // { affectedRows: 1, insertId: 1, warningStatus: 0 }
+  const connec = await conn.query("USE hermes");
+  console.log(connec); // { affectedRows: 1, insertId: 1, warningStatus: 0 }
 	const rows = await conn.query("SELECT 1 as val");
 	console.log(rows); //[ {val: 1}, meta: ... ]
 	const res = await conn.query("INSERT INTO usuarios VALUES ( 'prueba','prueba','prueba2','user' )", [1, "mariadb"]);
