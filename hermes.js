@@ -7,8 +7,13 @@ var app = express(); //aplicacion interpretada
 var path = require('path'); //para usar directorios fuera de views
 var fs = require('fs');
 var listener = app.listen(8080); //puerto de hermes
-require('dotenv').config()
-
+require('dotenv').config();
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "public"))); //se define directorio externo, puede usarse para cualquier otro
+app.set('view engine', 'pug');
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -32,33 +37,32 @@ async function asyncFunction() {
     if (conn) return conn.end();
   }
 } //entran datos una y otra vez a base de datos
-
-app.use(express.static(path.join(__dirname, "public"))); //se define directorio externo, puede usarse para cualquier otro
-app.set('view engine', 'pug');
 app.get('/', function(soli, resp) {
   resp.render('login');
 });
 app.post('/login', function(soli, resp) {
-  const usuario = soli.getElementsByName('usuario');
-  const password = soli.getElementsByName('password');
-  const data = {
-    usuario,
-    password
-  };
+      var data = {
+        usuario: soli.body.usuario,
+        password: soli.body.password
+      }
+      console.log(data);
+      let conn;
+      try {
+        conn = pool.getConnection();
+        const resp = conn.query("SELECT FROM usuarios ",
 
-  connection.query('SELECT FROM usuarios', data, function(error, results, fields) {
-    if (error) {
-      throw error;
+
+
+          data, [1, "mariadb"]);
+      } catch (err) {
+        throw (err);
+        console.log(err);
+      } finally {
+        if (conn) return conn.end();
+      }
     }
-    resp.render('/layout');
-  });
-});
-
-
-
-
-/*new CronJob('* * * * * *', function() {
-  console.log('You will see this message every second');
-  console.log('Listening on port ' + listener.address().port);
-}, null, true, 'America/Los_Angeles');
-*/
+    /*new CronJob('* * * * * *', function() {
+      console.log('You will see this message every second');
+      console.log('Listening on port ' + listener.address().port);
+    }, null, true, 'America/Los_Angeles');
+    */
