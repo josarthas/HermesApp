@@ -41,28 +41,25 @@ app.get('/', function(soli, resp) {
   resp.render('login');
 });
 app.post('/login', function(soli, resp) {
-      var data = {
-        usuario: soli.body.usuario,
-        password: soli.body.password
-      }
-      console.log(data);
-      let conn;
-      try {
-        conn = pool.getConnection();
-        const resp = conn.query("SELECT FROM usuarios ",
-
-
-
-          data, [1, "mariadb"]);
-      } catch (err) {
-        throw (err);
-        console.log(err);
-      } finally {
-        if (conn) return conn.end();
-      }
-    }
-    /*new CronJob('* * * * * *', function() {
-      console.log('You will see this message every second');
-      console.log('Listening on port ' + listener.address().port);
-    }, null, true, 'America/Los_Angeles');
-    */
+  var data = {
+    usuario: soli.body.usuario,
+    password: soli.body.password
+  }
+  console.log(data);
+  let conn;
+  try {
+    conn = pool.getConnection();
+    const resp = conn.query("SELECT FROM usuarios ", data, [1, "mariadb"]);
+  } catch (err) {
+    throw (err);
+    console.log(err);
+  } finally {
+    if (conn) return conn.end();
+  }
+  resp.render('layout');
+});
+/*new CronJob('* * * * * *', function() {
+  console.log('You will see this message every second');
+  console.log('Listening on port ' + listener.address().port);
+}, null, true, 'America/Los_Angeles');
+*/
