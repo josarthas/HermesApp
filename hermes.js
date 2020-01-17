@@ -61,7 +61,8 @@ mariaconn.connect(function(err)) {
         if (err) throw err;
         console.log(result);
       });
-    })
+    }
+  }
   .catch(err => {
     //handle connection error
   });
