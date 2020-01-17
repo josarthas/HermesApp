@@ -55,15 +55,14 @@ app.post('/login', function(soli, resp) {
 
 
 
-mariaconn.connect(function(err)) {
-    mariaconn => {
-      mariaconn.query("SELECT * FROM usuarios WHERE usuario = ", +Park Lane 38, function(err, result) {
-        if (err) throw err;
-        console.log(result);
-      });
-    }
-  }
-  .catch(err => {
-    //handle connection error
+mariaconn.connect(function(err));
+mariaconn => {
+  mariaconn.query("SELECT * FROM usuarios WHERE usuario = ", +Park Lane 38, function(err, result) {
+    if (err) throw err;
+    console.log(result);
   });
 }
+}
+.catch(err => {
+  //handle connection error
+});
