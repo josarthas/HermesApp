@@ -1,11 +1,14 @@
 const mariadb = require('mariadb'); //servidor linux, usamos mariadb
-const bodyParser = require("body-parser"); //zxczxc
+const bodyParser = require('body-parser'); //zxczxc
+var mysql = require('mysql');
 var CronJob = require('cron').CronJob; //para definir intervalos de tiempo de algoritmos de tendencias
 var express = require('express'); //servidor web
 var pug = require('pug'); //renderizado de html desde pug
 var app = express(); //aplicacion interpretada
 var path = require('path'); //para usar directorios fuera de views
 var fs = require('fs');
+var Twit = require('twit');
+var tracery = require('tracery-grammar');
 var listener = app.listen(8080); //puerto de hermes
 require('dotenv').config();
 app.use(bodyParser.urlencoded({
@@ -25,6 +28,9 @@ var mariaconn = mariadb.createConnection({
   port: process.env.DB_PORT,
   database: process.env.DB_DB
 });
+var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
+
+console.log(mariaconn);
 
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
@@ -39,14 +45,32 @@ console.log(pool);
 app.get('/', function(soli, resp) {
   resp.render('login');
 });
+app.get('/consulta', function(soli, resp) {
+  resp.render('consulta');
+});
+app.get('/resumen', function(soli, resp) {
+  resp.render('resumen');
+});
+
+
 
 app.post('/login', function(soli, resp) {
-  var data = {
-    usuario: soli.body.usuario,
-    password: soli.body.password
-  }
-  resp.render('layout');
+  var userdb = soli.body.usuario;
+  var passworddb = soli.body.password;
+
+  mariaconn.connect(function(err) {
+    if (err) throw err;
+    con.query(sqluserconsult, "usuario=", userdb, "AND password=", passworddb, function(err, result) {
+      if (err) {
+        throw err;
+        console.log(result);
+        resp.render('/login');
+      } else
+        resp.render('/layout');
+    })
+  });
 });
+
 /*new CronJob('* * * * * *', function() {
   console.log('You will see this message every second');
   console.log('Listening on port ' + listener.address().port);
