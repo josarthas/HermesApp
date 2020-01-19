@@ -43,12 +43,15 @@ const pool = mariadb.createPool({
 console.log(pool);
 
 app.get('/', function(soli, resp) {
+  console.log(app);
   resp.render('login');
 });
 app.get('/consulta', function(soli, resp) {
+  console.log(app);
   resp.render('consulta');
 });
 app.get('/resumen', function(soli, resp) {
+  console.log(app);
   resp.render('resumen');
 });
 
@@ -57,6 +60,7 @@ app.get('/resumen', function(soli, resp) {
 app.post('/login', function(soli, resp) {
   var userdb = soli.body.usuario;
   var passworddb = soli.body.password;
+  console.log(app);
 
   mariaconn.connect(function(err) {
     if (err) throw err;
