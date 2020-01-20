@@ -54,7 +54,10 @@ app.get('/resumen', function(soli, resp) {
   console.log(app);
   resp.render('resumen');
 });
-
+app.get('/login', function(soli, resp) {
+  console.log(app);
+  resp.render('login');
+});
 
 
 app.post('/login', function(soli, resp) {
