@@ -36,3 +36,29 @@ block contenido
                       td=twitter.usuario
                       td=twitter.password
                       td=twitter.telefonos_numero
+
+
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary nichos
+        // Card Content - Collapse
+        #collapseCardExample.collapse.show
+          .card-body
+            -var twitter = twitters
+            div
+              table.table.table-hover
+                thead
+                  tr: th Cuentas en Hermes
+                tbody
+                  tr
+                    td Usuario
+                    td Contraseña
+                    td Teléfono
+                  each twitter in twitters
+                    tr
+                      td=twitter.usuario
+                      td=twitter.password
+                      td=twitter.telefonos_numero

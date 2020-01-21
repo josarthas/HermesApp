@@ -112,8 +112,11 @@ app.post('/login', function(soli, resp) {
           var nichoinfo = soli.body.description;
           var insertnicho = sqlinsert.concat("nichos (nicho, resumen) VALUES ('", nichodb, "', '", nichoinfo, "');");
           mariaconn.query(insertnicho, function(err, result, fields) {
-            if (err) throw err;
+            if (error & error != "ER_DUP_ENTRY") {
+              resp.render('./camp');
+            }
           });
+          resp.render('./camp');
         });
         console.log(app);
       });
