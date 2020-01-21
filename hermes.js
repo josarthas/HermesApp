@@ -46,7 +46,7 @@ var APP_CONSUMER_KEY = process.env.APP_CONSUMER_KEY;
 var tokens;
 var access_token;
 var access_token_secret;
-mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario=EsmelindaGarVe", function(err, result, fields) {
+mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe'", function(err, result, fields) {
   if (err) throw err;
   tokens = result;
   console.log(tokens);
