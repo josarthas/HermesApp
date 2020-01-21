@@ -6,13 +6,6 @@ block contenido
     h1.h3.mb-0.text-gray-800 Consulta de las Bases de Datos
   .row
     .col-lg-12
-      // Basic Card
-      .card.shadow.mb-4
-        .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary Iniciar campaña
-        .card-body
-          | 
-    .col-lg-12
       // Collapsable Card Example
       .card.shadow.mb-4
         // Card Header - Accordion
@@ -21,4 +14,10 @@ block contenido
         // Card Content - Collapse
         #collapseCardExample.collapse.show
           .card-body
-
+            |Iniciar Campaña
+            form#formulario.user(method='post' action='/nicho')
+              .form-group
+                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
+              .form-group
+                input#password.form-control.form-control-user(type='text' name='description' placeholder='Descripción')
+              button.btn.btn-success.btn-circle(type='submit') 

@@ -12,6 +12,7 @@ var tracery = require('tracery-grammar');
 var stringify = require('stringify');
 var listener = app.listen(8080); //puerto de hermes
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
+var sqlinsert = "INSERT INTO ";
 require('dotenv').config();
 app.use(bodyParser.urlencoded({
   extended: true
@@ -38,7 +39,8 @@ var loginconn = mysql.createConnection({
   port: process.env.DB_PORT,
   database: process.env.DB_DB,
 });
-
+var APP_CONSUMER_SECRET = process.env.APP_CONSUMER_SECRET;
+var APP_CONSUMER_KEY = process.env.APP_CONSUMER_KEY;
 
 console.log(mariaconn);
 /*const pool = mariadb.createPool({
@@ -59,10 +61,16 @@ app.get('/login', function(soli, resp) {
   console.log(app);
   resp.render('login');
 });
+app.get('/hermes', function(soli, resp) {
+  console.log(app);
+  resp.render('login');
+});
+
 
 app.post('/login', function(soli, resp) {
   var userdb = soli.body.usuario;
   var passworddb = soli.body.password;
+
   console.log(app);
   var logdata = sqluserconsult.concat("usuario='", userdb, "' AND password='", passworddb, "';");
   mariaconn.query(logdata, function(err, result) {
@@ -77,7 +85,7 @@ app.post('/login', function(soli, resp) {
     } else if (result.length > 0) {
       if (result)
         console.log(result);
-      resp.render('./layout');
+      resp.render('./resumen');
 
       app.get('/resumen', function(soli, resp) {
         var counts;
@@ -98,8 +106,16 @@ app.post('/login', function(soli, resp) {
         );
       });
       app.get('/camp', function(soli, resp) {
-        console.log(app);
         resp.render('./camp');
+        app.post('/nicho', function(soli, resp) {
+          var nichodb = soli.body.jsonnicho;
+          var nichoinfo = soli.body.description;
+          var insertnicho = sqlinsert.concat("nichos (nicho, resumen) VALUES ('", nichodb, "', '", nichoinfo, "');");
+          mariaconn.query(insertnicho, function(err, result, fields) {
+            if (err) throw err;
+          });
+        });
+        console.log(app);
       });
 
 
