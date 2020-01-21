@@ -1,17 +1,11 @@
 extends ./layout.pug
 block contenido
 
+
   // Page Heading
   .d-sm-flex.align-items-center.justify-content-between.mb-4
-    h1.h3.mb-0.text-gray-800 Consulta de las Bases de Datos
+    h1.h3.mb-0.text-gray-800 Resumen
   .row
-    .col-lg-12
-      // Basic Card
-      .card.shadow.mb-4
-        .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary Resumen de datos de Hermes
-        .card-body
-          | Consulta de las bases de datos, no se muestran las tablas completas
     .col-lg-12
       // Collapsable Card Example
       .card.shadow.mb-4
@@ -21,18 +15,16 @@ block contenido
         // Card Content - Collapse
         #collapseCardExample.collapse.show
           .card-body
-            -var twitter = twitters
+            -var nicho=nichos
+            -var count=counts
             div
               table.table.table-hover
                 thead
-                  tr: th Cuentas en Hermes
+                  tr: th Resumen
                 tbody
                   tr
-                    td Usuario
-                    td Contraseña
-                    td Teléfono
-                  each twitter in twitters
+                    td Cuentas
+                    td Nichos
                     tr
-                      td=twitter.usuario
-                      td=twitter.password
-                      td=twitter.telefonos_numero
+                      td=counts
+                      td=nichos

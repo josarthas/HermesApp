@@ -1,0 +1,24 @@
+extends ./layout.pug
+block contenido
+
+  // Page Heading
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Consulta de las Bases de Datos
+  .row
+    .col-lg-12
+      // Basic Card
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Iniciar campaña
+        .card-body
+          | 
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Campaña
+        // Card Content - Collapse
+        #collapseCardExample.collapse.show
+          .card-body
+
