@@ -14,7 +14,6 @@ var listener = app.listen(8080); //puerto de hermes
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
 var sqlinsert = "INSERT INTO ";
 var formidable = require('formidable');
-
 require('dotenv').config();
 app.use(bodyParser.urlencoded({
   extended: true
@@ -22,7 +21,6 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public"))); //se define directorio externo, puede usarse para cualquier otro
 app.set('view engine', 'pug');
-
 var mariaconn = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -32,7 +30,6 @@ var mariaconn = mysql.createPool({
   database: process.env.DB_DB,
   connectionLimit: 50
 });
-
 var loginconn = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -53,14 +50,12 @@ mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usua
   access_token = tokens.access_token;
   access_token_secret = tokens.access_token_secret;
 });
-
 var T = new Twit({
   consumer_key: APP_CONSUMER_KEY,
   consumer_secret: APP_CONSUMER_SECRET,
   access_token: 'access_token',
   access_token_secret: 'access_token_secret'
 });
-
 console.log(mariaconn);
 app.get('/', function(soli, resp) {
   console.log(app);
@@ -70,11 +65,9 @@ app.get('/hermes', function(soli, resp) {
   console.log(app);
   resp.render('login');
 });
-
 app.post('/login', function(soli, resp) {
   var userdb = soli.body.usuario;
   var passworddb = soli.body.password;
-
   console.log(app);
   var logdata = sqluserconsult.concat("usuario='", userdb, "' AND password='", passworddb, "';");
   mariaconn.query(logdata, function(err, result) {
@@ -124,44 +117,34 @@ app.post('/login', function(soli, resp) {
         });
         console.log(app);
       });
-
       app.get('/consulta', function(soli, resp) {
-        var twitters;
-        var nichos;
-        var telefonos;
-        var obj;
+        var twitterx;
+        var nichox;
+        var telefonox;
         mariaconn.query("SELECT usuario, password, telefonos_numero FROM twitter", function(err, result, fields) {
           if (err) throw err;
           console.log(result);
-          twitters = result;
+          twitterx = result;
         });
         mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
           if (err) throw err;
           console.log(result);
-          nichos = result;
+          nichox = result;
         });
-
         mariaconn.query("SELECT company,numero FROM telefonos", function(err, result, fields) {
           if (err) throw err;
           console.log(result);
-          telefonos = result;
+          telefonox = result;
         });
-        console.log(nichos);
-        console.log(twitters);
-        console.log(telefonos);
-
-        var str = nichos +
-          '\n' + twitters + '\n' + telefonos + '\n';
-
-        var strLines = str.split("\n");
-        for (var i in strLines) {
-          obj = JSON.parse(strLines[i]);
-        }
-        resp.render('./consulta', obj);
+        console.log(nichox);
+        console.log(twitterx);
+        console.log(telefonox);
+        twitters = twitterx;
+        nichos = nichox;
+        telefonos = telefonox;
+        resp.render('./consulta', twitters, nichos, telefonos);
       });
-
     }
-
   });
   resp.render('./layout');
 });
