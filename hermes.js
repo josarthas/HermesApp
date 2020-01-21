@@ -13,7 +13,7 @@ var stringify = require('stringify');
 var listener = app.listen(8080); //puerto de hermes
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
 var sqlinsert = "INSERT INTO ";
-
+var formidable = require('formidable');
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({
@@ -114,7 +114,7 @@ app.post('/login', function(soli, resp) {
         app.post('/nicho', function(soli, resp) {
           var nichodb = soli.body.jsonnicho;
           var nichoinfo = soli.body.description;
-          var insertnicho = sqlinsert.concat("nichos (nicho, resumen) VALUES ('", nichodb, "', '", nichoinfo, "');");
+          var insertnicho = sqlinsert.concat("nichos (json,nicho, resumen) VALUES ('", nichodb, "', '", nichoinfo, "');");
           mariaconn.query(insertnicho, function(err, result, fields) {
             if (error & error != "ER_DUP_ENTRY") {
               resp.render('./camp');

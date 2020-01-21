@@ -31,9 +31,12 @@ block contenido
         #collapseCardExample1.collapse.show
           .card-body
             |Nuevo Número
-            form#formulario.user(method='post' action='/nicho')
+            form#formulario.user(method='post' action='/nicho' enctype='multipart/form-data')
               .form-group
                 input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
               .form-group
                 input#password.form-control.form-control-user(type='text' name='description' placeholder='Descripción')
-              button.btn.btn-success.btn-circle(type='submit') 
+              .form-group
+                input(type='file' name='filetoupload')
+              button.btn.btn-success.btn-circle(type='submit')
+
