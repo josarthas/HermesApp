@@ -3,7 +3,7 @@ block contenido
 
   // Page Heading
   .d-sm-flex.align-items-center.justify-content-between.mb-4
-    h1.h3.mb-0.text-gray-800 Consulta de las Bases de Datos
+    h1.h3.mb-0.text-gray-800 Campañas
   .row
     .col-lg-12
       // Collapsable Card Example
@@ -25,12 +25,12 @@ block contenido
       // Collapsable Card Example
       .card.shadow.mb-4
         // Card Header - Accordion
-        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+        a.d-block.card-header.py-3(href='#collapseCardExample1' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
           h6.m-0.font-weight-bold.text-primary Campañas
         // Card Content - Collapse
-        #collapseCardExample.collapse.show
+        #collapseCardExample1.collapse.show
           .card-body
-            |Nuevo Nicho
+            |Nuevo Número
             form#formulario.user(method='post' action='/nicho')
               .form-group
                 input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')

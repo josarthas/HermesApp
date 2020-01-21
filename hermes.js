@@ -13,6 +13,8 @@ var stringify = require('stringify');
 var listener = app.listen(8080); //puerto de hermes
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
 var sqlinsert = "INSERT INTO ";
+
+
 require('dotenv').config();
 app.use(bodyParser.urlencoded({
   extended: true
@@ -41,23 +43,26 @@ var loginconn = mysql.createConnection({
 });
 var APP_CONSUMER_SECRET = process.env.APP_CONSUMER_SECRET;
 var APP_CONSUMER_KEY = process.env.APP_CONSUMER_KEY;
+var tokens;
+var access_token;
+var access_token_secret;
+mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario=EsmelindaGarVe", function(err, result, fields) {
+  if (err) throw err;
+  tokens = result;
+  console.log(tokens);
+  access_token = tokens.access_token;
+  access_token_secret = tokens.access_token_secret;
+});
+
+var T = new Twit({
+  consumer_key: APP_CONSUMER_KEY,
+  consumer_secret: APP_CONSUMER_SECRET,
+  access_token: 'access_token',
+  access_token_secret: 'access_token_secret'
+});
 
 console.log(mariaconn);
-/*const pool = mariadb.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PWD,
-  connectionLimit: process.env.DB_CONNLMT,
-  port: process.env.DB_PORT,
-  database: process.env.DB_DB
-}); //no requiere seguridad extra al correr directamente sobre el servidor local. solo se usa con MariaDB en Debian
-console.log(pool);
-*/
 app.get('/', function(soli, resp) {
-  console.log(app);
-  resp.render('login');
-});
-app.get('/login', function(soli, resp) {
   console.log(app);
   resp.render('login');
 });
@@ -65,7 +70,6 @@ app.get('/hermes', function(soli, resp) {
   console.log(app);
   resp.render('login');
 });
-
 
 app.post('/login', function(soli, resp) {
   var userdb = soli.body.usuario;
@@ -121,23 +125,43 @@ app.post('/login', function(soli, resp) {
         console.log(app);
       });
 
-
-
       app.get('/consulta', function(soli, resp) {
+        var twitters;
+        var nichos;
+        var telefonos;
+        var obj;
         mariaconn.query("SELECT usuario, password, telefonos_numero FROM twitter", function(err, result, fields) {
           if (err) throw err;
           console.log(result);
-          resp.render('./consulta', {
-            twitters: result
-          });
+          twitters = result;
         });
+        mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
+          if (err) throw err;
+          console.log(result);
+          nichos = result;
+        });
+
+        mariaconn.query("SELECT company,numero FROM telefonos", function(err, result, fields) {
+          if (err) throw err;
+          console.log(result);
+          telefonos = result;
+        });
+        console.log(nichos);
+        console.log(twitters);
+        console.log(telefonos);
+
+        var str = nichos +
+          '\n' + twitters + '\n' + telefonos + '\n';
+
+        var strLines = str.split("\n");
+        for (var i in strLines) {
+          obj = JSON.parse(strLines[i]);
+        }
+        resp.render('./consulta', obj);
       });
 
     }
+
   });
+  resp.render('./layout');
 });
-/*new CronJob('* * * * * *', function() {
-  console.log('You will see this message every second');
-  console.log('Listening on port ' + listener.address().port);
-}, null, true, 'America/Los_Angeles');
-*/
