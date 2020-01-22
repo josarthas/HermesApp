@@ -1,10 +1,13 @@
 {
-  "name": "HermesApp",
+  "title":"HermesApp",
+  "name": "hermes",
   "license": "MIT",
   "requires": true,
   "lockfileVersion": 1,
+  "version":"1.0",
   "description": "Manejo de Cuentas Twitter.",
   "repository": "none",
+  "homepage": "http://magiaytecnologia.com.mx/hermes",
   "dependencies": {
     "body-parser": "^1.19.0",
     "browserify": "^16.5.0",
