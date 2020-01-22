@@ -1,0 +1,62 @@
+extends ./layout.pug
+block contenido
+
+  // Page Heading
+  -var telefono = telefonos
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Consulta de los datos de Teléfonos
+  .row
+    .col-lg-12
+      // Basic Card
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Resumen de Teléfonos
+        .card-body
+          | Consulta de las bases de datos de Teléfonos Celulares
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample2' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Telefonos
+        // Card Content - Collapse
+        #collapseCardExample2.collapse.show
+          .card-body
+
+            div
+              table.table.table-hover
+                thead
+                  tr: th Celulares guardados en Hermes
+                tbody
+                  tr
+                    td Telefono
+                    td Compañía
+                    td Número de serie SIM
+                  each telefono in telefonos
+                    tr
+                      td=telefono.numero
+                      td=telefono.company
+                      td=telefono.serie_sim
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Nuevo Teléfono
+        // Card Content - Collapse
+        #collapseCardExample.collapse.show
+          .card-body
+            |Nuevo Número
+            form#formulario.user(method='post' action='/newnumber')
+              .form-group
+                input#usuario.form-control.form-control-user(type='text' name='telefono' placeholder='Número')
+              .form-group
+                input#company.form-control.form-control-user(list='company' name='company' placeholder='Compañía')
+                datalist#company
+                  option(value='Telcel')
+                  option(value='AT&T ')
+                  option(value='Movistar')
+                  option(value='Otro')
+              .form-group
+                input#simdata.form-control.form-control-user(type='text' name='simdata' placeholder='Clave SIM')
+              button.btn.btn-success.btn-circle(type='submit') 

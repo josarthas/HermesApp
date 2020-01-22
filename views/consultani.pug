@@ -1,0 +1,56 @@
+extends ./layout.pug
+block contenido
+
+  // Page Heading
+  -var nicho = nichos
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Consulta de la base de datos de Nichos
+  .row
+    .col-lg-12
+      // Basic Card
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Resumen de los nichos
+        .card-body
+          | Nichos en la base de datos, disponibles para utilizar
+
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Nichos
+        // Card Content - Collapse
+        #collapseCardExample.collapse.show
+          .card-body
+
+            div
+              table.table.table-hover
+                thead
+                  tr: th Nichos en Hermes
+                tbody
+                  tr
+                    td Nicho
+                    td Resumen
+                  each nicho in nichos
+                    tr
+                      td=nicho.nicho
+                      td=nicho.resumen
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample1' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Agregar Nicho
+        // Card Content - Collapse
+        #collapseCardExample1.collapse.show
+          .card-body
+            |Nuevo Nicho
+            form#formulario.user(method='post' action='/nicho' enctype='multipart/form-data')
+              .form-group
+                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
+              .form-group
+                input#password.form-control.form-control-user(type='selectbox' name='description' placeholder='Resumen')
+              .form-group
+                input(type='file' name='filetoupload')
+              button.btn.btn-success.btn-circle(type='submit')

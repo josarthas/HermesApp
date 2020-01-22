@@ -1,7 +1,7 @@
 extends ./layout.pug
 block contenido
 
-
+  -var count=countsx
   // Page Heading
   .d-sm-flex.align-items-center.justify-content-between.mb-4
     h1.h3.mb-0.text-gray-800 Resumen
@@ -18,11 +18,11 @@ block contenido
             div
               table.table.table-hover
                 thead
-                  tr: th Resumen
+                  tr Resumen
                 tbody
                   tr
                     td Cuentas
                     td Nichos
-                    tr
-                      td=counts
-                      td=nichos
+                  tr
+                    td=count.countss
+                    td=count.nichoss

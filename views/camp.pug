@@ -5,38 +5,6 @@ block contenido
   .d-sm-flex.align-items-center.justify-content-between.mb-4
     h1.h3.mb-0.text-gray-800 Campañas
   .row
-    .col-lg-12
-      // Collapsable Card Example
-      .card.shadow.mb-4
-        // Card Header - Accordion
-        a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
-          h6.m-0.font-weight-bold.text-primary Campañas
-        // Card Content - Collapse
-        #collapseCardExample.collapse.show
-          .card-body
-            |Nuevo Nicho
-            form#formulario.user(method='post' action='/nicho')
-              .form-group
-                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
-              .form-group
-                input#password.form-control.form-control-user(type='text' name='description' placeholder='Descripción')
-              button.btn.btn-success.btn-circle(type='submit') 
-    .col-lg-12
-      // Collapsable Card Example
-      .card.shadow.mb-4
-        // Card Header - Accordion
-        a.d-block.card-header.py-3(href='#collapseCardExample1' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
-          h6.m-0.font-weight-bold.text-primary Campañas
-        // Card Content - Collapse
-        #collapseCardExample1.collapse.show
-          .card-body
-            |Nuevo Número
-            form#formulario.user(method='post' action='/nicho' enctype='multipart/form-data')
-              .form-group
-                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
-              .form-group
-                input#password.form-control.form-control-user(type='text' name='description' placeholder='Descripción')
-              .form-group
-                input(type='file' name='filetoupload')
-              button.btn.btn-success.btn-circle(type='submit')
+
+
 

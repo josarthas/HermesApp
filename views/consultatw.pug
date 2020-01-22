@@ -1,0 +1,39 @@
+extends ./layout.pug
+block contenido
+
+  // Page Heading
+  -var twitter = twitters
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Consulta de las Cuentas de Twitter
+  .row
+    .col-lg-12
+      // Basic Card
+      .card.shadow.mb-4
+        .card-header.py-3
+          h6.m-0.font-weight-bold.text-primary Resumen de Cuentas
+        .card-body
+          | Cuentas de Twitter almacenadas y validadas mediante Magia Y Tecnología
+          | Información se genera automáticamente, no es posible modificar.
+    .col-lg-12
+      // Collapsable Card Example
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample1' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Cuentas de Twitter en Hermes
+        // Card Content - Collapse
+        #collapseCardExample1.collapse.show
+          .card-body
+
+            div
+              table.table.table-hover
+                thead
+                tbody
+                  tr
+                    td Usuario
+                    td Contraseña
+                    td Teléfono
+                  each twitter in twitters
+                    tr
+                      td=twitter.usuario
+                      td=twitter.password
+                      td=twitter.telefonos_numero
