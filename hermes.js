@@ -41,9 +41,6 @@ var mariaconn = mysql.createPool({
 var APP_CONSUMER_SECRET = process.env.APP_CONSUMER_SECRET;
 var APP_CONSUMER_KEY = process.env.APP_CONSUMER_KEY;
 var tokens;
-var access_token;
-var access_token_secret;
-var obj = [];
 var counts;
 var nichos;
 mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe'", function(err, result, fields) {
@@ -51,8 +48,6 @@ mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usua
   console.log(result);
   tokens = result;
   console.log(tokens);
-  access_token = tokens.access_token;
-  access_token_secret = tokens.access_token_secret;
 });
 console.log(mariaconn);
 var T = new Twit({
