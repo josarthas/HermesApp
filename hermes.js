@@ -53,8 +53,8 @@ console.log(mariaconn);
 var T = new Twit({
   consumer_key: APP_CONSUMER_KEY,
   consumer_secret: APP_CONSUMER_SECRET,
-  access_token: tokens.access_token,
-  access_token_secret: tokens.access_token_secret
+  access_token: 'tokens.access_token',
+  access_token_secret: 'tokens.access_token_secret'
 });
 console.log(T);
 app.get('/login', function(soli, resp) {
