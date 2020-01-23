@@ -19,15 +19,13 @@ block contenido
       .card.shadow.mb-4
         // Card Header - Accordion
         a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
-          h6.m-0.font-weight-bold.text-primary Nichos
+          h6.m-0.font-weight-bold.text-primary Nichos en Hermes
         // Card Content - Collapse
         #collapseCardExample.collapse.show
           .card-body
-
             div
               table.table.table-hover
                 thead
-                  tr: th Nichos en Hermes
                 tbody
                   tr
                     td Nicho
@@ -48,9 +46,9 @@ block contenido
             |Nuevo Nicho
             form#formulario.user(method='post' action='/nicho' enctype='multipart/form-data')
               .form-group
-                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho')
+                input#usuario.form-control.form-control-user(type='text' name='jsonnicho' placeholder='Nicho' required='')
               .form-group
-                input#password.form-control.form-control-user(type='selectbox' name='description' placeholder='Resumen')
+                input#password.form-control.form-control-user(type='selectbox' name='description' placeholder='Resumen' required='')
               .form-group
                 input(type='file' name='filetoupload')
               button.btn.btn-success.btn-circle(type='submit')

@@ -18,7 +18,7 @@ block contenido
       .card.shadow.mb-4
         // Card Header - Accordion
         a.d-block.card-header.py-3(href='#collapseCardExample2' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
-          h6.m-0.font-weight-bold.text-primary Telefonos
+          h6.m-0.font-weight-bold.text-primary Celulares en Hermes
         // Card Content - Collapse
         #collapseCardExample2.collapse.show
           .card-body
@@ -26,7 +26,6 @@ block contenido
             div
               table.table.table-hover
                 thead
-                  tr: th Celulares guardados en Hermes
                 tbody
                   tr
                     td Telefono
@@ -49,14 +48,14 @@ block contenido
             |Nuevo Número
             form#formulario.user(method='post' action='/newnumber')
               .form-group
-                input#usuario.form-control.form-control-user(type='text' name='telefono' placeholder='Número')
+                input#usuario.form-control.form-control-user(type='text' name='telefono' placeholder='Número' required='' pattern='{10,10}')
               .form-group
-                input#company.form-control.form-control-user(list='company' name='company' placeholder='Compañía')
+                input#company.form-control.form-control-user(list='company' name='company' placeholder='Compañía' required='')
                 datalist#company
                   option(value='Telcel')
                   option(value='AT&T ')
                   option(value='Movistar')
                   option(value='Otro')
               .form-group
-                input#simdata.form-control.form-control-user(type='text' name='simdata' placeholder='Clave SIM')
+                input#simdata.form-control.form-control-user(type='text' name='simdata' placeholder='Clave SIM' required='' pattern='{20,20}')
               button.btn.btn-success.btn-circle(type='submit') 

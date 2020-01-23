@@ -34,13 +34,20 @@ head
       | Hermes
     // Nav Item - Pages Collapse Menu - NO LE QUITES LA IDENTACION
     li.nav-item
+      a.nav-link.collapsed(href='#' data-toggle='collapse' data-target='#collapseTwo2' aria-expanded='true' aria-controls='collapseTwo')
+        i.fas.fa-fw.fa-chart-area
+        span Campañas
+      #collapseTwo2.collapse(aria-labelledby='headingTwo' data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+          h6.collapse-header Herramientas de Campaña:
+          a.collapse-item(href='/unitcamp') Unitaria
+          a.collapse-item(href='/masscamp') Masiva
       a.nav-link.collapsed(href='#' data-toggle='collapse' data-target='#collapseTwo' aria-expanded='true' aria-controls='collapseTwo')
         i.fas.fa-fw.fa-cog
         span Herramientas
       #collapseTwo.collapse(aria-labelledby='headingTwo' data-parent='#accordionSidebar')
         .bg-white.py-2.collapse-inner.rounded
           h6.collapse-header Herramientas de Hermes:
-          a.collapse-item(href='/camp') Campaña
           a.collapse-item(href='/twitter') Cuentas Twitter
           a.collapse-item(href='/nichos') Nichos
           a.collapse-item(href='/telefonos') Telefonos

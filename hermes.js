@@ -119,18 +119,17 @@ app.post('/login', function(soli, resp) {
       resp.render('./layout');
       app.get('/resumen', function(soli, resp) {
 
-        var countss = counts.toString();
-        var nichoss = nichos.toString();
         fcounts = JSON.stringify({
-          countss,
-          nichoss
+          countss: counts,
+          nichoss: nichos
         });
         resp.render('./resumen', {
           countsx: fcounts
         });
       });
-      app.get('/camp', function(soli, resp) {
-        resp.render('./camp');
+      //unitcamp
+      app.get('/unitcamp', function(soli, resp) {
+        resp.render('./unitcamp');
         app.post('/nicho', function(soli, resp) {
           var nichodb = soli.body.jsonnicho;
           var nichoinfo = soli.body.description;
@@ -144,6 +143,23 @@ app.post('/login', function(soli, resp) {
         });
         console.log(app);
       });
+
+      app.get('/masscamp', function(soli, resp) {
+        resp.render('./masscamp');
+        app.post('/nicho', function(soli, resp) {
+          var nichodb = soli.body.jsonnicho;
+          var nichoinfo = soli.body.description;
+          var insertnicho = sqlinsert.concat("nichos (json,nicho, resumen) VALUES ('", nichodb, "', '", nichoinfo, "');");
+          mariaconn.query(insertnicho, function(err, result, fields) {
+            if (error & error != "ER_DUP_ENTRY") {
+              resp.render('./camp');
+            }
+          });
+          resp.render('./camp');
+        });
+        console.log(app);
+      });
+
       app.get('/twitter', function(soli, resp) {
         resp.render('./consultatw', {
           twitters: twitterx
