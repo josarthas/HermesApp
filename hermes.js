@@ -29,7 +29,7 @@ app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
   safeFileNames: true,
-  preserveExtension: true
+  preserveExtension: 4
 }));
 // variables globales que vamos a usar
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
@@ -84,7 +84,7 @@ Date.prototype.toMysqlFormat = function() {
 };
 console.log(mariaconn);
 /*/función de conexion básica a twitter, también es el prototipo básico de llamada a la base, le mandamos un query en sqly nos regresa error, resultado y campos*/
-mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe';", function(err, result, fields) {
+mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='AbigailazeM';", function(err, result, fields) {
   if (err) throw err;
   nichos = Object.keys(result).length;
   console.log(nichos);
@@ -127,6 +127,10 @@ app.post('/login', function(soli, resp) {
       }
     } else if (result.length > 0) {
       console.log('Conexxion API Twitter');
+      console.log(APP_CONSUMER_KEY);
+      console.log(APP_CONSUMER_KEY);
+      console.log(ACCESS_TOKEN);
+      console.log(ACCESS_TOKEN_SECRET);
       var T = new Twit({
         consumer_key: APP_CONSUMER_KEY,
         consumer_secret: APP_CONSUMER_SECRET,
@@ -191,6 +195,12 @@ app.post('/login', function(soli, resp) {
         resp.render('./resumen', {
           countsx: fcounts
         });
+
+        T.post('statuses/update', {
+          status: 'Magia!'
+        }, function(err, data, response) {
+          console.log(data)
+        });
       });
       //MAndar rnder de campaña nueva
       app.get('/newcamp', function(soli, resp) {
@@ -221,6 +231,16 @@ app.post('/login', function(soli, resp) {
           campaigns: campaignx
         });
       });
+      /*switch () {
+        case x:
+          // code block
+          break;
+        case y:
+          // code block
+          break;
+        default:
+          // code block
+      }*/
       app.get('/twitter', function(soli, resp) {
         console.log('TWitter seleccionado');
         console.log(twitterx);
@@ -230,8 +250,13 @@ app.post('/login', function(soli, resp) {
       });
       app.get('/nichos', function(soli, resp) {
         console.log('nichos seleccionado');
+        mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
+          if (err) throw err;
+          console.log("Consulta nichos:");
+          console.log(result);
+          nichox = result;
+        });
         console.log(nichox);
-
         resp.render('./consultani', {
           nichos: nichox
         });
@@ -260,16 +285,7 @@ app.post('/login', function(soli, resp) {
         findate.setHours(findate.getHours() + 3);
         findate = findate.toMysqlFormat();
         console.log(findate);
-        /*switch () {
-          case x:
-            // code block
-            break;
-          case y:
-            // code block
-            break;
-          default:
-            // code block
-        }*/
+
         insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nombrecam, "', '", nichocam, "', '", descripcam, "', '", algoritmocam, "', '", "Mass', '", inidate, "', '", porcentcam, "', '", findate, "');");
         console.log(insertcamp);
         mariaconn.query(insertcamp, function(err, result, fields) {
@@ -277,7 +293,8 @@ app.post('/login', function(soli, resp) {
             throw err;
             console.log(result);
             resp.render('./newcamp', {
-              nichos: nichox
+              nichos: nichox,
+              twitters: twitterx
             });
           } else {
             console.log(err);
@@ -285,7 +302,8 @@ app.post('/login', function(soli, resp) {
             console.log('campaña insertada');
 
             resp.render('./newcamp', {
-              campaigns: campaignx
+              nichos: nichox,
+              twitters: twitterx
             });
           }
           console.log(result);
@@ -307,16 +325,34 @@ app.post('/login', function(soli, resp) {
           if (err & err != "ER_DUP_ENTRY") {
             throw err;
             console.log(result);
+            mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
+              if (err) throw err;
+              console.log("Consulta nichos:");
+              console.log(result);
+              nichox = result;
+            });
             resp.render('./consultani', {
               nichos: nichox
             });
           } else {
             console.log('nicho insertado');
+            mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
+              if (err) throw err;
+              console.log("Consulta nichos:");
+              console.log(result);
+              nichox = result;
+            });
             resp.render('./consultani', {
               nichos: nichox
             });
           }
           console.log(result);
+          mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
+            if (err) throw err;
+            console.log("Consulta nichos:");
+            console.log(result);
+            nichox = result;
+          });
           resp.render('./consultani', {
             nichos: nichox
           });
