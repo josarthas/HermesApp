@@ -26,11 +26,11 @@ ALTER TABLE telefonos ADD CONSTRAINT numeros_pk PRIMARY KEY ( numero );
 CREATE TABLE twitter (
     usuario               VARCHAR(16) NOT NULL,
     password              VARCHAR(16),
-    consumer_key          VARCHAR(32),
-    consumer_secret       VARCHAR(32),
-    access_token          VARCHAR(32),
-    access_token_secret   VARCHAR(32),
-    telefonos_numero      VARCHAR(10),
+    consumer_key          VARCHAR(64),
+    consumer_secret       VARCHAR(64),
+    access_token          VARCHAR(64),
+    access_token_secret   VARCHAR(64),
+    telefonos_numero      VARCHAR(10)
 );
 
 ALTER TABLE twitter ADD CONSTRAINT twitter_pk PRIMARY KEY ( usuario );

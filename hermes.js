@@ -84,7 +84,7 @@ Date.prototype.toMysqlFormat = function() {
 };
 console.log(mariaconn);
 /*/función de conexion básica a twitter, también es el prototipo básico de llamada a la base, le mandamos un query en sqly nos regresa error, resultado y campos*/
-mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='AbigailazeM';", function(err, result, fields) {
+mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe';", function(err, result, fields) {
   if (err) throw err;
   nichos = Object.keys(result).length;
   console.log(nichos);
