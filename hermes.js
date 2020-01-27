@@ -9,12 +9,13 @@ var app = express(); //Entorno de servidor
 var pug = require('pug'); //renderizado de html desde pug
 var app = express(); //aplicacion interpretada
 var path = require('path'); //para usar directorios fuera de views
-var fs = require('fs');
+var fs = require('fs'); //filesystem
 var Twit = require('twit'); //Conexión a la API de Twitter, necesitamos crear esta conexión con los tokens creados automáticamente
 var tracery = require('tracery-grammar'); //Herramienta de expansión de nichos
 var stringify = require('stringify'); // para hacer string nuestros JSON
 var listener = app.listen(8080); //puerto de hermes
 var formidable = require('formidable'); //Archivos de nicho
+var multer = require('multer'); //
 //Configuramos para el uso de express, .env y directorios publicos
 require('dotenv').config(); //Para leer el archivo ".env" donde guardamos los datos de configuracion y accesos de base de datos y APP
 app.use(bodyParser.urlencoded({
@@ -26,10 +27,10 @@ app.set('view engine', 'pug');
 app.locals.moment = require('moment');
 app.use(fileUpload({
   useTempFiles: true,
-  tempFileDir: '/tmp/'
+  tempFileDir: '/tmp/',
+  safeFileNames: true,
+  preserveExtension: true
 }));
-// default options
-
 // variables globales que vamos a usar
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
 var sqlinsert = "INSERT INTO ";
@@ -48,6 +49,7 @@ var counts;
 var nichodb;
 var nichoinfo;
 var nichopath;
+var newpath;
 var nichos;
 var T;
 var inidate;
@@ -57,6 +59,7 @@ var ACCESS_TOKEN_SECRET;
 //datos que se leen desde el archivo .env
 var APP_CONSUMER_SECRET = process.env.APP_CONSUMER_SECRET;
 var APP_CONSUMER_KEY = process.env.APP_CONSUMER_KEY;
+var NICHOS_PATH = process.env.NICHOS_PATH;
 //Conexion de base de datos, puede servir para cualquier base de datos relacional Tipo SQL, MongoDB no es recomendable en lo absoluto
 //Se llama maria por que originalmente estaba planeada a ser ejecutada desde el servidor en Global, no un VPS
 //Debian trae por Default MariaDB, base de datos tipo sql but it's free
@@ -77,12 +80,10 @@ function twoDigits(d) {
   return d.toString();
 }
 Date.prototype.toMysqlFormat = function() {
-  return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
+  return this.getFullYear() + "-" + twoDigits(1 + this.getMonth()) + "-" + twoDigits(this.getDate()) + " " + twoDigits(this.getHours()) + ":" + twoDigits(this.getMinutes()) + ":" + twoDigits(this.getSeconds());
 };
-
 console.log(mariaconn);
-/*/función de conexion básica a twitter, también es el prototipo básico de llamada a la base, le mandamos un query en sql
-y nos regresa error, resultado y campos*/
+/*/función de conexion básica a twitter, también es el prototipo básico de llamada a la base, le mandamos un query en sqly nos regresa error, resultado y campos*/
 mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe';", function(err, result, fields) {
   if (err) throw err;
   nichos = Object.keys(result).length;
@@ -96,12 +97,7 @@ mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usua
   ACCESS_TOKEN_SECRET = tokenss[0].access_token_secret;
   console.log(ACCESS_TOKEN_SECRET);
 });
-
-
-
 // 3 direcciones accesibles para Hermes, debe configurarse cada una de las direcciones expresadas en el reenvio de puertos del VPS
-
-
 app.get('/login', function(soli, resp) {
   resp.render('login');
 });
@@ -130,13 +126,13 @@ app.post('/login', function(soli, resp) {
         }
       }
     } else if (result.length > 0) {
+      console.log('Conexxion API Twitter');
       var T = new Twit({
         consumer_key: APP_CONSUMER_KEY,
         consumer_secret: APP_CONSUMER_SECRET,
         access_token: ACCESS_TOKEN,
         access_token_secret: ACCESS_TOKEN_SECRET
       });
-      console.log('Conexxion API Twitter');
       console.log(T);
       //si no hay errores, hacemos consulta básica para la pestaña resumen y las tarjetas de control.
       //las consultas se realizan desde el inicio de la aplicacion
@@ -214,6 +210,12 @@ app.post('/login', function(soli, resp) {
       });
       //rndrs de cnslta
       app.get('/viewcamp', function(soli, resp) {
+        mariaconn.query("SELECT nombre, nicho, propag, tipo, inicio, cuentas, fin FROM campaign", function(err, result, fields) {
+          if (err) throw err;
+          console.log("Consulta campañas:");
+          console.log(result);
+          campaignx = result;
+        });
         console.log('Cons cmpaña pedida');
         resp.render('./viewcamp', {
           campaigns: campaignx
@@ -233,7 +235,6 @@ app.post('/login', function(soli, resp) {
         resp.render('./consultani', {
           nichos: nichox
         });
-
       });
       app.get('/telefonos', function(soli, resp) {
         console.log('Telefonos seleccionado');
@@ -242,7 +243,6 @@ app.post('/login', function(soli, resp) {
           telefonos: telefonox
         });
       });
-
       app.post('/newcamp3', function(solis, resp) {
         var nombrecam = solis.body.nombre;
         console.log(nombrecam);
@@ -283,35 +283,26 @@ app.post('/login', function(soli, resp) {
             console.log(err);
             console.log(result);
             console.log('campaña insertada');
-            resp.render('./viewcamp', {
+
+            resp.render('./newcamp', {
               campaigns: campaignx
             });
           }
           console.log(result);
         });
       });
-
-
       app.post('/nichosub', function(solis, resp) {
         nichodb = solis.body.nicho;
         nichoinfo = solis.body.description;
-        let archinicho = solis.file.archinicho;
-        console.log(solis.file.archinicho);
-        console.log(archinicho);
+        let archinicho = solis.files.archinicho;
         // Use the mv() method to place the file somewhere on your server
-        archinicho.mv('C:/Users/josaf/', +archinicho, function(err) {
-          newpath = 'C:/Users/josaf/', +farchinicho;
+        newpath = NICHOS_PATH.concat(solis.files.archinicho.name);
+        archinicho.mv(newpath, function(err) {
           nichopath = newpath;
           if (err)
             return resp.status(500).send(err);
         });
-        console.log('nichodb');
-        console.log(nichodb);
-        console.log('nichoinfo');
-        console.log(nichoinfo);
-        console.log('nichopath');
-        console.log(nichopath);
-        var insertnicho = sqlinsert.concat("nichos (json,nicho, resumen) VALUES ('", nichopath, "', '", nichodb, "', '", nichoinfo, "')");
+        var insertnicho = sqlinsert.concat("nichos (json,nicho, resumen) VALUES ('", newpath, "', '", nichodb, "', '", nichoinfo, "')");
         mariaconn.query(insertnicho, function(err, result, fields) {
           if (err & err != "ER_DUP_ENTRY") {
             throw err;
@@ -321,11 +312,16 @@ app.post('/login', function(soli, resp) {
             });
           } else {
             console.log('nicho insertado');
+            resp.render('./consultani', {
+              nichos: nichox
+            });
           }
           console.log(result);
+          resp.render('./consultani', {
+            nichos: nichox
+          });
         });
       });
     }
   });
-
 });

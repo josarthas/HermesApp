@@ -59,9 +59,9 @@ CREATE TABLE campaign (
     descrip   VARCHAR(64),
     propag    VARCHAR(8),
     tipo      VARCHAR(8),
-    inicio    DATE,
+    inicio    DATETIME,
     cuentas   INTEGER,
-    fin       DATE
+    fin       DATETIME
 );
 ALTER TABLE campaign ADD CONSTRAINT campaign_pk PRIMARY KEY ( nombre );
 ALTER TABLE campaign

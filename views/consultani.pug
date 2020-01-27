@@ -28,7 +28,7 @@ block contenido
                 thead
                 tbody
                   tr
-                    td Nicho
+                    td Nombre de Nicho
                     td Resumen
                   each nicho in nichos
                     tr
@@ -44,11 +44,9 @@ block contenido
         #collapseCardExample1.collapse.show
           .card-body
             |Nuevo Nicho
-            form#formulario.nicho(method='post' action='/nichosub')
+            form#formulario.nicho(method='post' action='/nichosub' enctype='multipart/form-data')
               .form-group
-                input#nicho.form-control.form-control-user(type='text' name='nicho' placeholder='Nicho' required)
-              .form-group
-                input#description.form-control.form-control-user(type='selectbox' name='description' placeholder='Resumen' required)
-              .form-group
-                input#filetoupload.form-control.form-control-user(type='file' name='archinicho')
+                input#nicho.form-control.form-control-user(type='text' name='nicho' placeholder='Nombre' required)
+                input#description.form-control.form-control-user(type='text' name='description' placeholder='Resumen' required)
+                input#archinicho.form-control.form-control-user(type='file' name='archinicho' required)
               button.btn.btn-success.btn-circle(type='submit')

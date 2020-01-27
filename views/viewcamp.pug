@@ -32,5 +32,5 @@ block contenido
                       td=campaign.cuentas
                         |%
                       td=campaign.propag
-                      td=campaign.inicio
-                      td=campaign.fin
+                      td #{moment(campaign.inicio).format('MM/DD/YYYY hh:mm:ss')}
+                      td #{moment(campaign.fin).format('MM/DD/YYYY hh:mm:ss')}
