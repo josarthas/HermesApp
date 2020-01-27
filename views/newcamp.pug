@@ -1,0 +1,67 @@
+extends ./layout.pug
+block contenido
+  -var nicho = nichos
+  -var twitter=twitters
+  // Page Heading
+  .d-sm-flex.align-items-center.justify-content-between.mb-4
+    h1.h3.mb-0.text-gray-800 Campañas
+  .row 
+    .col-lg-12 
+
+      .card.shadow.mb-4
+        // Card Header - Accordion
+        a.d-block.card-header.py-3(href='#collapseCardExample1' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+          h6.m-0.font-weight-bold.text-primary Nueva Campaña
+        // Card Content - Collapse
+        #collapseCardExample1.collapse.show
+          .card-body
+            .mb-3
+            form#campaign.smb-1(method='post' action='/newcamp3') Datos nuevos.
+              .form-group
+                input#nombre.form-control.form-control-user(type='text' name='nombre' placeholder='Nombre de Campaña')
+              .form-group
+                input#descrip.form-control.form-control-user(type='text' name='descrip' placeholder='Descrip')
+              nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
+                a.navbar-brand Nicho
+                ul.navbar-nav.ml-auto
+                  select#nicho.form-control.form-control-user.dropdown(type='text' name='nicho' placeholder='Ingrese usuario')
+                    a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
+                      | Nicho
+                    .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
+                      each nicho in nichos
+                        option.dropdown-item(value=nicho.nicho)=nicho.nicho
+                      .dropdown-divider
+                        option.dropdown-item(value='#') Cancelar
+              p.mb-0.small
+              .smb-1 Seleccionar algoritmo de propagación
+              nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
+                a.navbar-brand Algoritmo
+                ul.navbar-nav.ml-auto
+                  select#algoritmo.form-control.form-control-user.nav-item.dropdown(type='text' name='algoritmo' placeholder='Ingrese usuario')
+                    a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
+                      | Seleccionar
+                    .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
+                      option.dropdown-item(value='lin') Lineal
+                      option.dropdown-item(value='parab') Parabólico
+                      option.dropdown-item(value='slow') Lineal lento
+                      .dropdown-divider
+                      option.dropdown-item(value='') Cancelar
+
+              p.mb-0.small
+              .smb-1 Opciones de cuentas
+              nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
+                a.navbar-brand Seleccionar 
+                ul.navbar-nav.ml-auto
+                  select.form-group.nav-item.dropdown(type='number' name='porcent' placeholder='Ingrese usuario')
+                    a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
+                      | Opciones
+                    .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
+                      option.dropdown-item(value=10) Usar 10%
+                      option.dropdown-item(value=25) usar 25%
+                      option.dropdown-item(value=33) usar 33%
+                      option.dropdown-item(value=50) usar 50%
+                      option.dropdown-item(value=75) usar 75%
+                      .dropdown-divider
+                      option.dropdown-item(value='100') Usar todas
+              p.mb-0.small
+                button.btn.btn-success.btn-circle(type='submit')

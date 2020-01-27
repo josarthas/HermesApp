@@ -5,11 +5,7 @@ CREATE TABLE nichos (
 );
 ALTER TABLE nichos ADD CONSTRAINT nichos_pk PRIMARY KEY ( nicho );
 
-ALTER TABLE campaign
-    ADD CHECK ( tipo IN (
-        'Uni',
-        'Mass'
-    ) );
+
 
 CREATE TABLE telefonos (
     numero      VARCHAR(10),
@@ -58,12 +54,18 @@ ALTER TABLE usuarios ADD CONSTRAINT usuarios_pk PRIMARY KEY ( usuario );
 
 /*Nueva tabls campañas, insertar a Base de datos.*/
 CREATE TABLE campaign (
-    nombre    VARCHAR(12) NOT NULL,
+    nombre    VARCHAR(16) NOT NULL,
+    nicho     VARCHAR(16),
     descrip   VARCHAR(64),
-    propag    VARCHAR(32),
-    tipo      VARCHAR(16),
+    propag    VARCHAR(8),
+    tipo      VARCHAR(8),
     inicio    DATE,
     cuentas   INTEGER,
     fin       DATE
 );
 ALTER TABLE campaign ADD CONSTRAINT campaign_pk PRIMARY KEY ( nombre );
+ALTER TABLE campaign
+    ADD CHECK ( tipo IN (
+        'Uni',
+        'Mass'
+    ) );

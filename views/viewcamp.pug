@@ -1,0 +1,36 @@
+extends ./layout.pug
+block contenido
+
+
+  -var campaign = campaigns
+  .col-lg-12
+    // Collapsable Card Example
+    .card.shadow.mb-4
+      // Card Header - Accordion
+      a.d-block.card-header.py-3(href='#collapseCardExample' data-toggle='collapse' role='button' aria-expanded='true' aria-controls='collapseCardExample')
+        h6.m-0.font-weight-bold.text-primary Control de campañas
+      // Card Content - Collapse
+      #collapseCardExample.collapse.show
+        .card-body
+          .mb-3
+          .smb-1 Campañas activas
+          p.mb-0.small
+            table.table.table-hover
+              thead
+              tbody
+                tr
+                  td Nombre
+                  td Nicho
+                  td Cuentas
+                  td Algoritmo
+                  td Fecha inicio
+                  td Fecha fin
+                  each campaign in campaigns
+                    tr
+                      td=campaign.nombre
+                      td=campaign.nicho
+                      td=campaign.cuentas
+                        |%
+                      td=campaign.propag
+                      td=campaign.inicio
+                      td=campaign.fin
