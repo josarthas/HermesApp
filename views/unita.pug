@@ -11,75 +11,49 @@ block contenido
     // Card Content - Collapse
     #collapseCardExample3.collapse.show
       .card-body
-        form#unita.smb-1(method='post' action='/newcamp3') Seleccionar cuenta
+        form#unita.smb-1(method='post' action='/unitact') Seleccionar cuenta
           nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
             a.navbar-brand Cuenta
             ul.navbar-nav.ml-auto
-            form.navbar-nav.ml-auto
-              select.nav-item.dropdown.form-control.form-control-user(type='text' name='cuenta' placeholder='Nombre de Campaña' require)
+              select#cuenta.nav-item.dropdown.form-control.form-control-user(type='text' name='cuenta' require)
                 a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
                   .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
                     each twitter in twitters
                       option.dropdown-item(value=twitter.usuario)=twitter.usuario
-                    .dropdown-divider
-                    option.dropdown-item(value='') Cancelar
+                      .dropdown-divider
+                      option.dropdown-item(value='') Cancelar
           p.mb-0.small
           .mb-3
           .smb-1 Seleccionar nicho
           nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
             a.navbar-brand Nicho
             ul.navbar-nav.ml-auto
-              select.nav-item.dropdown
+              select#nicho.form-control.form-control-user.dropdown(type='text' name='nicho' )
                 a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
                   | Nicho
                 .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
                   each nicho in nichos
-                    option.dropdown-item(value='#')=nicho.nichos
+                    option.dropdown-item(value=nicho.nicho)=nicho.nicho
                   .dropdown-divider
                   option.dropdown-item(value='#') Cancelar
+
           p.mb-0.small
-            .smb-1 Tiempo de propagacion
-            nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
-              a.navbar-brand Tiempo de campaña
-              ul.navbar-nav.ml-auto
-                select.nav-item.dropdown
-                  #navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
-                    | Seleccionar
-                  .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
-                    option.dropdown-item(value=1) 1 hr
-                    option.dropdown-item(value=2) 2 hr
-                    option.dropdown-item(value=3) 3 hr
-                    option.dropdown-item(value=4) 6 hr
-                    .dropdown-divider
-                    option.dropdown-item(value='') Cancelar
-          p.mb-0.small
-          .smb-1 Seleccionar algoritmo de propagación
+          .smb-1
           nav.navbar.navbar-expand.navbar-light.bg-light.mb-4
             a.navbar-brand Tiempo entre tweets
             ul.navbar-nav.ml-auto
-              select.nav-item.dropdown(name='')
+              select#propag.form-control.form-control-user.nav-item.dropdown(name='propag' type='number')
                 a#navbarDropdown.nav-link.dropdown-toggle(role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='true')
                   | Seleccionar
                 .dropdown-menu.dropdown-menu-right.animated--grow-in(aria-labelledby='navbarDropdown')
-                  option.dropdown-item(value='#') 10 min
-                  option.dropdown-item(value='#') 15 min
-                  option.dropdown-item(value='#') 30 min
-                  option.dropdown-item(value='#') 45 min
-                  option.dropdown-item(value='#') 1 hr
-                  option.dropdown-item(value='#') 2 hr
-                  option.dropdown-item(value='#') 3 hr
-                  option.dropdown-item(value='#') 6 hr
-                  option.dropdown-item(value='#') 8 hr
-                  option.dropdown-item(value='#') 12 hr
-                  option.dropdown-item(value='#') 16 hr
-                  option.dropdown-item(value='#') 24 hr
-                  option.dropdown-item(value='#') 2 dias
-                  option.dropdown-item(value='#') 1 semana
-                  option.dropdown-item(value='#') 1 mes
-                  option.dropdown-item(value='#') 3 meses
-                  option.dropdown-item(value='#') 6 meses
+                  option.dropdown-item(value=10) 10 min
+                  option.dropdown-item(value=20) 20 min
+                  option.dropdown-item(value=30) 30 min
+                  option.dropdown-item(value=60) 1 hr
+                  option.dropdown-item(value=120) 2 hrs
+
                   .dropdown-divider
-                  option.dropdown-item(href='#') Cancelar
+                  option.dropdown-item(href='') Cancelar
 
 
           button.btn.btn-success.btn-circle(type='submit')

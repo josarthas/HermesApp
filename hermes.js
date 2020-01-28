@@ -10,6 +10,7 @@ var pug = require('pug'); //renderizado de html desde pug
 var app = express(); //aplicacion interpretada
 var path = require('path'); //para usar directorios fuera de views
 var fs = require('fs'); //filesystem
+var glob = require('glob');
 var Twit = require('twit'); //Conexión a la API de Twitter, necesitamos crear esta conexión con los tokens creados automáticamente
 var tracery = require('tracery-grammar'); //Herramienta de expansión de nichos
 var stringify = require('stringify'); // para hacer string nuestros JSON
@@ -33,7 +34,11 @@ app.use(fileUpload({
 }));
 // variables globales que vamos a usar
 var sqluserconsult = "SELECT usuario, password FROM usuarios WHERE ";
+var selectquerytoken = "SELECT access_token,access_token_secret FROM twitter WHERE usuario='";
+var selectnicho = "SELECT json FROM nichos WHERE nicho='";
 var sqlinsert = "INSERT INTO ";
+var datediffs = "SELECT DATEDIFF ('";
+var selprop = "SELECT propag FROM campaign WHERE nicho='";
 var insertcamp;
 var twitterx;
 var nichox;
@@ -52,6 +57,13 @@ var nichopath;
 var newpath;
 var nichos;
 var T;
+var timerange;
+var nicholeido;
+var rawGrammar;
+var processedGrammar;
+var tweet;
+var diffs;
+var nichotracery;
 var inidate;
 var findate;
 var ACCESS_TOKEN;
@@ -84,19 +96,7 @@ Date.prototype.toMysqlFormat = function() {
 };
 console.log(mariaconn);
 /*/función de conexion básica a twitter, también es el prototipo básico de llamada a la base, le mandamos un query en sqly nos regresa error, resultado y campos*/
-mariaconn.query("SELECT access_token,access_token_secret FROM twitter WHERE usuario='EsmelindaGarVe';", function(err, result, fields) {
-  if (err) throw err;
-  nichos = Object.keys(result).length;
-  console.log(nichos);
-  tokens = JSON.stringify(result);
-  console.log(tokens);
-  tokenss = JSON.parse(tokens);
-  console.log(tokenss);
-  ACCESS_TOKEN = tokenss[0].access_token;
-  console.log(ACCESS_TOKEN);
-  ACCESS_TOKEN_SECRET = tokenss[0].access_token_secret;
-  console.log(ACCESS_TOKEN_SECRET);
-});
+
 // 3 direcciones accesibles para Hermes, debe configurarse cada una de las direcciones expresadas en el reenvio de puertos del VPS
 app.get('/login', function(soli, resp) {
   resp.render('login');
@@ -131,13 +131,7 @@ app.post('/login', function(soli, resp) {
       console.log(APP_CONSUMER_KEY);
       console.log(ACCESS_TOKEN);
       console.log(ACCESS_TOKEN_SECRET);
-      var T = new Twit({
-        consumer_key: APP_CONSUMER_KEY,
-        consumer_secret: APP_CONSUMER_SECRET,
-        access_token: ACCESS_TOKEN,
-        access_token_secret: ACCESS_TOKEN_SECRET
-      });
-      console.log(T);
+
       //si no hay errores, hacemos consulta básica para la pestaña resumen y las tarjetas de control.
       //las consultas se realizan desde el inicio de la aplicacion
       console.log(result);
@@ -194,12 +188,6 @@ app.post('/login', function(soli, resp) {
         console.log(fcounts);
         resp.render('./resumen', {
           countsx: fcounts
-        });
-
-        T.post('statuses/update', {
-          status: 'Magia!'
-        }, function(err, data, response) {
-          console.log(data)
         });
       });
       //MAndar rnder de campaña nueva
@@ -267,6 +255,270 @@ app.post('/login', function(soli, resp) {
         resp.render('./consultatel', {
           telefonos: telefonox
         });
+      });
+      app.post('/unitact', function(solis, resp) {
+
+        var usuariocam = solis.body.cuenta;
+        console.log(usuariocam);
+        selectquerytoken = selectquerytoken.concat(usuariocam, "'");
+        console.log(selectquerytoken);
+        var nichocam = solis.body.nicho;
+        console.log(nichocam);
+        var propag = solis.body.propag;
+        console.log(propag);
+        var porcentcam = solis.body.cuenta;
+        console.log(porcentcam);
+        inidate = new Date().toMysqlFormat();
+        console.log(inidate);
+        findate = new Date();
+        propag = parseInt(propag, 10);
+        console.log(propag);
+        findate.setHours(findate.getUTCHours() + 3);
+        findate = findate.toMysqlFormat();
+        console.log(findate);
+        mariaconn.query(selectquerytoken, function(err, result, fields) {
+          if (err) throw err;
+          nichos = Object.keys(result).length;
+          console.log(nichos);
+          tokens = JSON.stringify(result);
+          console.log(tokens);
+          tokenss = JSON.parse(tokens);
+          console.log(tokenss);
+          ACCESS_TOKEN = tokenss[0].access_token;
+          console.log(ACCESS_TOKEN);
+          ACCESS_TOKEN_SECRET = tokenss[0].access_token_secret;
+          console.log(ACCESS_TOKEN_SECRET);
+
+        });
+
+        var nichoseek = selectnicho.concat(nichocam, "';");
+        console.log(nichoseek);
+        mariaconn.query(nichoseek, function(err, result, fields) {
+          if (err) throw err;
+          console.log(err);
+          console.log(result);
+          nichotracery = result[0].json;
+          console.log(nichotracery);
+          console.log('Nicho Tracery path:');
+          console.log(nichotracery);
+          nicholeido = JSON.parse(fs.readFileSync(String(nichotracery), 'utf8'));
+          rawGrammar = nicholeido;
+          processedGrammar = tracery.createGrammar(rawGrammar);
+        });
+        insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nichocam, porcentcam, "', '", nichocam, "', 'Propagación unitaria de nicho', '", propag, "', '", "Uni', '", inidate, "', '", porcentcam, "', '", findate, "');");
+        console.log(insertcamp);
+        mariaconn.query(insertcamp, function(err, result, fields) {
+          if (err & err != "ER_DUP_ENTRY") {
+            throw err;
+            console.log(result);
+            resp.render('./unita', {
+              nichos: nichox,
+              twitters: twitterx
+            });
+          } else {
+            console.log(err);
+            console.log(result);
+            console.log('campaña insertada');
+            resp.render('./unita', {
+              nichos: nichox,
+              twitters: twitterx
+            });
+          }
+        });
+
+        var selecpropag = selprop.concat(nichocam, "'");
+        mariaconn.query(selecpropag, function(err, result, fields) {
+          if (err) throw err;
+          console.log("Error SQL:");
+          console.log(err);
+          console.log("Resultado SQL:");
+          console.log(result[0]);
+          console.log("Nicho Tracery:");
+          nichotracery = result[0].propag;
+          console.log(nichotracery);
+          switch (propag) {
+            case 10:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "* */10 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('* */10 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                      status: tweet
+                    },
+                    function(err, data, response) {
+                      console.log(data);
+                    });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs <= 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 20:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "* */20 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('* */20 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs <= 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 30:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "* */30 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('* */30 * * * *', function() {
+
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs <= 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 60:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "* */60 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('* */60 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs <= 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 120:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "* */60 */2 * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('* */60 */2 * * *', function() {
+
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs <= 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+          }
+        });
+
+
       });
       app.post('/newcamp3', function(solis, resp) {
         var nombrecam = solis.body.nombre;

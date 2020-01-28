@@ -52,13 +52,13 @@ ALTER TABLE usuarios ADD CONSTRAINT usuarios_pk PRIMARY KEY ( usuario );
 
 /*Nueva tabls campañas, insertar a Base de datos.*/
 CREATE TABLE campaign (
-    nombre    VARCHAR(16) NOT NULL,
+    nombre    VARCHAR(32) NOT NULL,
     nicho     VARCHAR(16),
     descrip   VARCHAR(64),
     propag    VARCHAR(8),
     tipo      VARCHAR(8),
     inicio    DATETIME,
-    cuentas   INTEGER,
+    cuentas   VARCHAR(16),
     fin       DATETIME
 );
 ALTER TABLE campaign ADD CONSTRAINT campaign_pk PRIMARY KEY ( nombre );
