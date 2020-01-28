@@ -87,7 +87,7 @@ var mariaconn = mysql.createPool({
 });
 //Funcioncilla para poder pasar fechas JS a MySQL
 function twoDigits(d) {
-  if (0 <= d && d < 10) return "0" + d.toString();
+  if (0 < d && d < 10) return "0" + d.toString();
   if (-10 < d && d < 0) return "-0" + (-1 * d).toString();
   return d.toString();
 }
@@ -364,7 +364,7 @@ app.post('/login', function(soli, resp) {
                     });
                   console.log('Nicho expandido:');
                   console.log(tweet);
-                  if (diffs <= 0) {
+                  if (diffs < 0) {
                     console.log("Trabajo detenido");
                     job.stop();
                   }
@@ -399,7 +399,7 @@ app.post('/login', function(soli, resp) {
                   });
                   console.log('Nicho expandido:');
                   console.log(tweet);
-                  if (diffs <= 0) {
+                  if (diffs < 0) {
                     console.log("Trabajo detenido");
                     job.stop();
                   }
@@ -435,7 +435,7 @@ app.post('/login', function(soli, resp) {
                   });
                   console.log('Nicho expandido:');
                   console.log(tweet);
-                  if (diffs <= 0) {
+                  if (diffs < 0) {
                     console.log("Trabajo detenido");
                     job.stop();
                   }
@@ -470,7 +470,7 @@ app.post('/login', function(soli, resp) {
                   });
                   console.log('Nicho expandido:');
                   console.log(tweet);
-                  if (diffs <= 0) {
+                  if (diffs < 0) {
                     console.log("Trabajo detenido");
                     job.stop();
                   }
@@ -506,7 +506,7 @@ app.post('/login', function(soli, resp) {
                   });
                   console.log('Nicho expandido:');
                   console.log(tweet);
-                  if (diffs <= 0) {
+                  if (diffs < 0) {
                     console.log("Trabajo detenido");
                     job.stop();
                   }
