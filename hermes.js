@@ -64,8 +64,12 @@ var processedGrammar;
 var tweet;
 var diffs;
 var nichotracery;
+var usrcount;
 var inidate;
 var findate;
+var Tms;
+var ACCESS_TOKENx = [];
+var ACCESS_TOKEN_SECRETx = [];
 var ACCESS_TOKEN;
 var ACCESS_TOKEN_SECRET;
 //datos que se leen desde el archivo .env
@@ -118,7 +122,6 @@ app.post('/login', function(soli, resp) {
     //errores, regresan en loop infinito al login hasta que haya match de contraseña y usuario
     if (err) {
       throw err;
-      console.log(result);
       resp.render('/login');
       if (result.length = 0) {
         if (result) {
@@ -126,15 +129,8 @@ app.post('/login', function(soli, resp) {
         }
       }
     } else if (result.length > 0) {
-      console.log('Conexxion API Twitter');
-      console.log(APP_CONSUMER_KEY);
-      console.log(APP_CONSUMER_KEY);
-      console.log(ACCESS_TOKEN);
-      console.log(ACCESS_TOKEN_SECRET);
-
       //si no hay errores, hacemos consulta básica para la pestaña resumen y las tarjetas de control.
       //las consultas se realizan desde el inicio de la aplicacion
-      console.log(result);
       mariaconn.query("SELECT nicho FROM nichos", function(err, result, fields) {
         if (err) throw err;
         nichos = Object.keys(result).length;
@@ -144,42 +140,29 @@ app.post('/login', function(soli, resp) {
       //Cosulta Twitter
       mariaconn.query("SELECT usuario, password, telefonos_numero FROM twitter", function(err, result, fields) {
         if (err) throw err;
-        console.log("Consulta twitter:");
-        console.log(result);
         twitterx = result;
       });
-
       mariaconn.query("SELECT serie_sim,company,numero FROM telefonos", function(err, result, fields) {
         if (err) throw err;
-        console.log("Consulta: numeros");
-        console.log(result);
         telefonox = result;
       });
-
       mariaconn.query("SELECT usuario FROM twitter", function(err, result, fields) {
         if (err) throw err;
         counts = Object.keys(result).length;
-        console.log('Usuarios verificados:');
-        console.log(counts);
       });
-
       mariaconn.query("SELECT nicho, resumen FROM nichos", function(err, result, fields) {
         if (err) throw err;
-        console.log("Consulta nichos:");
-        console.log(result);
         nichox = result;
       });
-
       mariaconn.query("SELECT nombre, nicho, propag, tipo, inicio, cuentas, fin FROM campaign", function(err, result, fields) {
         if (err) throw err;
-        console.log("Consulta campañas:");
-        console.log(result);
         campaignx = result;
       });
       //y luego hacemos el render del layout principal
       resp.render('./layout');
       //dentro del layout definimos toda función de posteo, consulta y
       app.get('/resumen', function(soli, resp) {
+        //le vamos a pasar los json de las bases de datos
         fcounts = JSON.stringify({
           countss: counts,
           nichoss: nichos
@@ -219,16 +202,7 @@ app.post('/login', function(soli, resp) {
           campaigns: campaignx
         });
       });
-      /*switch () {
-        case x:
-          // code block
-          break;
-        case y:
-          // code block
-          break;
-        default:
-          // code block
-      }*/
+      //REnders y mas renders
       app.get('/twitter', function(soli, resp) {
         console.log('TWitter seleccionado');
         console.log(twitterx);
@@ -256,311 +230,12 @@ app.post('/login', function(soli, resp) {
           telefonos: telefonox
         });
       });
-      app.post('/unitact', function(solis, resp) {
-
-        var usuariocam = solis.body.cuenta;
-        console.log(usuariocam);
-        selectquerytoken = selectquerytoken.concat(usuariocam, "'");
-        console.log(selectquerytoken);
-        var nichocam = solis.body.nicho;
-        console.log(nichocam);
-        var propag = solis.body.propag;
-        console.log(propag);
-        var porcentcam = solis.body.cuenta;
-        console.log(porcentcam);
-        inidate = new Date().toMysqlFormat();
-        console.log(inidate);
-        findate = new Date();
-        propag = parseInt(propag, 10);
-        console.log(propag);
-        findate.setHours(findate.getUTCHours() + 3);
-        findate = findate.toMysqlFormat();
-        console.log(findate);
-        mariaconn.query(selectquerytoken, function(err, result, fields) {
-          if (err) throw err;
-          nichos = Object.keys(result).length;
-          console.log(nichos);
-          tokens = JSON.stringify(result);
-          console.log(tokens);
-          tokenss = JSON.parse(tokens);
-          console.log(tokenss);
-          ACCESS_TOKEN = tokenss[0].access_token;
-          console.log(ACCESS_TOKEN);
-          ACCESS_TOKEN_SECRET = tokenss[0].access_token_secret;
-          console.log(ACCESS_TOKEN_SECRET);
-
-        });
-
-        var nichoseek = selectnicho.concat(nichocam, "';");
-        console.log(nichoseek);
-        mariaconn.query(nichoseek, function(err, result, fields) {
-          if (err) throw err;
-          console.log(err);
-          console.log(result);
-          nichotracery = result[0].json;
-          console.log(nichotracery);
-          console.log('Nicho Tracery path:');
-          console.log(nichotracery);
-          nicholeido = JSON.parse(fs.readFileSync(String(nichotracery), 'utf8'));
-          rawGrammar = nicholeido;
-          processedGrammar = tracery.createGrammar(rawGrammar);
-        });
-        insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nichocam, porcentcam, "', '", nichocam, "', 'Propagación unitaria de nicho', '", propag, "', '", "Uni', '", inidate, "', '", porcentcam, "', '", findate, "');");
-        console.log(insertcamp);
-        mariaconn.query(insertcamp, function(err, result, fields) {
-          if (err & err != "ER_DUP_ENTRY") {
-            throw err;
-            console.log(result);
-            resp.render('./unita', {
-              nichos: nichox,
-              twitters: twitterx
-            });
-          } else {
-            console.log(err);
-            console.log(result);
-            console.log('campaña insertada');
-            resp.render('./unita', {
-              nichos: nichox,
-              twitters: twitterx
-            });
-          }
-        });
-
-        var selecpropag = selprop.concat(nichocam, "'");
-        mariaconn.query(selecpropag, function(err, result, fields) {
-          if (err) throw err;
-          console.log("Error SQL:");
-          console.log(err);
-          console.log("Resultado SQL:");
-          console.log(result[0]);
-          console.log("Nicho Tracery:");
-          nichotracery = result[0].propag;
-          console.log(nichotracery);
-          switch (propag) {
-            case 10:
-              var T = new Twit({
-                consumer_key: APP_CONSUMER_KEY,
-                consumer_secret: APP_CONSUMER_SECRET,
-                access_token: ACCESS_TOKEN,
-                access_token_secret: ACCESS_TOKEN_SECRET
-              });
-              console.log(T);
-              timerange = "* */10 * * * *";
-              console.log('timerange');
-              console.log(timerange);
-              var job = new CronJob('* */10 * * * *', function() {
-                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
-                mariaconn.query(dtdfs, function(err, result, fields) {
-                  if (err) throw err;
-                  console.log(result);
-                  diffs = result[0].date_diff;
-                  console.log(diffs);
-                  tweet = processedGrammar.flatten("#origin#");
-                  T.post('statuses/update', {
-                      status: tweet
-                    },
-                    function(err, data, response) {
-                      console.log(data);
-                    });
-                  console.log('Nicho expandido:');
-                  console.log(tweet);
-                  if (diffs < 0) {
-                    console.log("Trabajo detenido");
-                    job.stop();
-                  }
-                });
-              }, null, true, 'America/Mexico_City');
-              job.stop();
-              job.start();
-              break;
-            case 20:
-              var T = new Twit({
-                consumer_key: APP_CONSUMER_KEY,
-                consumer_secret: APP_CONSUMER_SECRET,
-                access_token: ACCESS_TOKEN,
-                access_token_secret: ACCESS_TOKEN_SECRET
-              });
-              console.log(T);
-              timerange = "* */20 * * * *";
-              console.log('timerange');
-              console.log(timerange);
-              var job = new CronJob('* */20 * * * *', function() {
-                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
-                mariaconn.query(dtdfs, function(err, result, fields) {
-                  if (err) throw err;
-                  console.log(result);
-                  diffs = result[0].date_diff;
-                  console.log(diffs);
-                  tweet = processedGrammar.flatten("#origin#");
-                  T.post('statuses/update', {
-                    status: tweet
-                  }, function(err, data, response) {
-                    console.log(data);
-                  });
-                  console.log('Nicho expandido:');
-                  console.log(tweet);
-                  if (diffs < 0) {
-                    console.log("Trabajo detenido");
-                    job.stop();
-                  }
-                });
-              }, null, true, 'America/Mexico_City');
-              job.stop();
-              job.start();
-              break;
-            case 30:
-              var T = new Twit({
-                consumer_key: APP_CONSUMER_KEY,
-                consumer_secret: APP_CONSUMER_SECRET,
-                access_token: ACCESS_TOKEN,
-                access_token_secret: ACCESS_TOKEN_SECRET
-              });
-              console.log(T);
-              timerange = "* */30 * * * *";
-              console.log('timerange');
-              console.log(timerange);
-              var job = new CronJob('* */30 * * * *', function() {
-
-                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
-                mariaconn.query(dtdfs, function(err, result, fields) {
-                  if (err) throw err;
-                  console.log(result);
-                  diffs = result[0].date_diff;
-                  console.log(diffs);
-                  tweet = processedGrammar.flatten("#origin#");
-                  T.post('statuses/update', {
-                    status: tweet
-                  }, function(err, data, response) {
-                    console.log(data);
-                  });
-                  console.log('Nicho expandido:');
-                  console.log(tweet);
-                  if (diffs < 0) {
-                    console.log("Trabajo detenido");
-                    job.stop();
-                  }
-                });
-              }, null, true, 'America/Mexico_City');
-              job.stop();
-              job.start();
-              break;
-            case 60:
-              var T = new Twit({
-                consumer_key: APP_CONSUMER_KEY,
-                consumer_secret: APP_CONSUMER_SECRET,
-                access_token: ACCESS_TOKEN,
-                access_token_secret: ACCESS_TOKEN_SECRET
-              });
-              console.log(T);
-              timerange = "* */60 * * * *";
-              console.log('timerange');
-              console.log(timerange);
-              var job = new CronJob('* */60 * * * *', function() {
-                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
-                mariaconn.query(dtdfs, function(err, result, fields) {
-                  if (err) throw err;
-                  console.log(result);
-                  diffs = result[0].date_diff;
-                  console.log(diffs);
-                  tweet = processedGrammar.flatten("#origin#");
-                  T.post('statuses/update', {
-                    status: tweet
-                  }, function(err, data, response) {
-                    console.log(data);
-                  });
-                  console.log('Nicho expandido:');
-                  console.log(tweet);
-                  if (diffs < 0) {
-                    console.log("Trabajo detenido");
-                    job.stop();
-                  }
-                });
-              }, null, true, 'America/Mexico_City');
-              job.stop();
-              job.start();
-              break;
-            case 120:
-              var T = new Twit({
-                consumer_key: APP_CONSUMER_KEY,
-                consumer_secret: APP_CONSUMER_SECRET,
-                access_token: ACCESS_TOKEN,
-                access_token_secret: ACCESS_TOKEN_SECRET
-              });
-              console.log(T);
-              timerange = "* */60 */2 * * *";
-              console.log('timerange');
-              console.log(timerange);
-              var job = new CronJob('* */60 */2 * * *', function() {
-
-                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
-                mariaconn.query(dtdfs, function(err, result, fields) {
-                  if (err) throw err;
-                  console.log(result);
-                  diffs = result[0].date_diff;
-                  console.log(diffs);
-                  tweet = processedGrammar.flatten("#origin#");
-                  T.post('statuses/update', {
-                    status: tweet
-                  }, function(err, data, response) {
-                    console.log(data);
-                  });
-                  console.log('Nicho expandido:');
-                  console.log(tweet);
-                  if (diffs < 0) {
-                    console.log("Trabajo detenido");
-                    job.stop();
-                  }
-                });
-              }, null, true, 'America/Mexico_City');
-              job.stop();
-              job.start();
-              break;
-          }
-        });
-
-
+      app.get('/logout', function(soli, resp) {
+        console.log('salida');
+        mariaconn.end();
+        resp.render('./login');
       });
-      app.post('/newcamp3', function(solis, resp) {
-        var nombrecam = solis.body.nombre;
-        console.log(nombrecam);
-        var descripcam = solis.body.descrip;
-        console.log(descripcam);
-        var nichocam = solis.body.nicho;
-        console.log(nichocam);
-        var algoritmocam = solis.body.algoritmo;
-        console.log(algoritmocam);
-        var porcentcam = solis.body.porcent;
-        console.log(porcentcam);
-        inidate = new Date().toMysqlFormat();
-        console.log(inidate);
-        findate = new Date()
-        findate.setHours(findate.getHours() + 3);
-        findate = findate.toMysqlFormat();
-        console.log(findate);
-
-        insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nombrecam, "', '", nichocam, "', '", descripcam, "', '", algoritmocam, "', '", "Mass', '", inidate, "', '", porcentcam, "', '", findate, "');");
-        console.log(insertcamp);
-        mariaconn.query(insertcamp, function(err, result, fields) {
-          if (err & err != "ER_DUP_ENTRY") {
-            throw err;
-            console.log(result);
-            resp.render('./newcamp', {
-              nichos: nichox,
-              twitters: twitterx
-            });
-          } else {
-            console.log(err);
-            console.log(result);
-            console.log('campaña insertada');
-
-            resp.render('./newcamp', {
-              nichos: nichox,
-              twitters: twitterx
-            });
-          }
-          console.log(result);
-        });
-      });
+      //Fin de los renders
       app.post('/nichosub', function(solis, resp) {
         nichodb = solis.body.nicho;
         nichoinfo = solis.body.description;
@@ -609,6 +284,510 @@ app.post('/login', function(soli, resp) {
             nichos: nichox
           });
         });
+      });
+
+      app.post('/unitact', function(solis, resp) {
+        var usuariocam = solis.body.cuenta;
+        console.log(usuariocam);
+        var selectquerytokenunit = selectquerytoken.concat(usuariocam, "'");
+        console.log(selectquerytoken);
+        var nichocam = solis.body.nicho;
+        console.log(nichocam);
+        var propag = solis.body.propag;
+        propag = parseInt(propag, 10);
+        console.log(propag);
+        var porcentcam = solis.body.cuenta;
+        console.log(porcentcam);
+        inidate = new Date().toMysqlFormat();
+        console.log(inidate);
+        findate = new Date();
+        console.log(propag);
+        findate.setHours(findate.getHours() + 3);
+        findate = findate.toMysqlFormat();
+        console.log(findate);
+        mariaconn.query(selectquerytokenunit, function(err, result, fields) {
+          if (err) throw err;
+          nichos = Object.keys(result).length;
+          console.log(nichos);
+          tokens = JSON.stringify(result);
+          console.log(tokens);
+          tokenss = JSON.parse(tokens);
+          console.log(tokenss);
+          ACCESS_TOKEN = tokenss[0].access_token;
+          console.log(ACCESS_TOKEN);
+          ACCESS_TOKEN_SECRET = tokenss[0].access_token_secret;
+          console.log(ACCESS_TOKEN_SECRET);
+        });
+        var nichoseek = selectnicho.concat(nichocam, "';");
+        console.log(nichoseek);
+        mariaconn.query(nichoseek, function(err, result, fields) {
+          if (err) throw err;
+          console.log(err);
+          console.log(result);
+          nichotracery = result[0].json;
+          console.log(nichotracery);
+          console.log('Nicho Tracery path:');
+          console.log(nichotracery);
+          nicholeido = JSON.parse(fs.readFileSync(String(nichotracery), 'utf8'));
+          rawGrammar = nicholeido;
+          processedGrammar = tracery.createGrammar(rawGrammar);
+        });
+        insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nichocam, inidate, "', '", nichocam, "', 'Propagación unitaria de nicho', '", propag, "', '", "Uni', '", inidate, "', '", porcentcam, "', '", findate, "');");
+        console.log(insertcamp);
+        mariaconn.query(insertcamp, function(err, result, fields) {
+          if (err & err != "ER_DUP_ENTRY") {
+            throw err;
+            console.log(result);
+            resp.render('./unita', {
+              nichos: nichox,
+              twitters: twitterx
+            });
+          } else {
+            console.log(err);
+            console.log(result);
+            console.log('campaña insertada');
+            resp.render('./unita', {
+              nichos: nichox,
+              twitters: twitterx
+            });
+          }
+        });
+        var selecpropag = selprop.concat(nichocam, "'");
+        mariaconn.query(selecpropag, function(err, result, fields) {
+          if (err) throw err;
+          console.log("Error SQL:");
+          console.log(err);
+          console.log("Resultado SQL:");
+          console.log(result[0]);
+          console.log("Nicho Tracery:");
+          nichotracery = result[0].propag;
+          console.log(nichotracery);
+          switch (propag) {
+            case 10:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "*/60 */10 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('*/60 */10 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                      status: tweet
+                    },
+                    function(err, data, response) {
+                      console.log(data);
+                    });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs < 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 20:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "*/60 */20 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('*/60 */20 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs < 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 30:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "*/60 */30 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('*/60 */30 * * * *', function() {
+
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs < 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 60:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "*/60 */60 * * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('*/60 */60 * * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs < 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+            case 120:
+              var T = new Twit({
+                consumer_key: APP_CONSUMER_KEY,
+                consumer_secret: APP_CONSUMER_SECRET,
+                access_token: ACCESS_TOKEN,
+                access_token_secret: ACCESS_TOKEN_SECRET
+              });
+              console.log(T);
+              timerange = "*/60 */60 */2 * * *";
+              console.log('timerange');
+              console.log(timerange);
+              var job = new CronJob('*/60 */60 */2 * * *', function() {
+                var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                mariaconn.query(dtdfs, function(err, result, fields) {
+                  if (err) throw err;
+                  console.log(result);
+                  diffs = result[0].date_diff;
+                  console.log(diffs);
+                  tweet = processedGrammar.flatten("#origin#");
+                  T.post('statuses/update', {
+                    status: tweet
+                  }, function(err, data, response) {
+                    console.log(data);
+                  });
+                  console.log('Nicho expandido:');
+                  console.log(tweet);
+                  if (diffs < 0) {
+                    console.log("Trabajo detenido");
+                    job.stop();
+                  }
+                });
+              }, null, true, 'America/Mexico_City');
+              job.stop();
+              job.start();
+              break;
+          }
+        });
+        mariaconn.query("SELECT nombre, nicho, propag, tipo, inicio, cuentas, fin FROM campaign", function(err, result, fields) {
+          if (err) throw err;
+          console.log("Consulta campañas:");
+          console.log(result);
+          campaignx = result;
+        });
+        console.log('Cons cmpaña pedida');
+        resp.render('./viewcamp', {
+          campaigns: campaignx
+        });
+      });
+
+      app.post('/newcamp3', function(solis, resp) {
+        var selectquerytokenmass = [];
+        var userstocampaign = [];
+        var nichosmass;
+        var tokensmass;
+        var tokenssmass;
+
+        var nombrecam = solis.body.nombre;
+        console.log(nombrecam);
+
+        var descripcam = solis.body.descrip;
+        console.log(descripcam);
+
+        var nichocam = solis.body.nicho;
+        console.log(nichocam);
+
+        var algocam = solis.body.algoritmo;
+        algocam = parseInt(algocam, 10);
+        console.log(algocam);
+
+        inidate = new Date().toMysqlFormat();
+        console.log(inidate);
+
+        findate = new Date();
+        findate.setHours(findate.getHours() + 4);
+        findate = findate.toMysqlFormat();
+        console.log(findate);
+
+        mariaconn.query("SELECT usuario FROM twitter", function(err, result, fields) {
+          if (err) throw err;
+          counts = Object.keys(result).length;
+          console.log('Usuarios verificados:');
+          console.log(counts);
+          for (var i = 0; i < counts; i++) {
+            userstocampaign[i] = result[i].usuario;
+            selectquerytokenmass[i] = selectquerytoken.concat(userstocampaign[i], "'");
+            mariaconn.query(selectquerytokenmass[i], function(err, result, fields) {
+              if (err) throw err;
+              nichosmass = Object.keys(result).length;
+              console.log(nichosmass);
+              tokensmass = JSON.stringify(result);
+              console.log(tokensmass);
+              tokenssmass = JSON.parse(tokensmass);
+              console.log(tokenssmass);
+              console.log('Tokens finales');
+              console.log(i);
+              ACCESS_TOKENx[i] = tokenssmass[0].access_token;
+              console.log(ACCESS_TOKENx[i]);
+              ACCESS_TOKEN_SECRETx[i] = tokenssmass[0].access_token_secret;
+              console.log(ACCESS_TOKEN_SECRETx[i]);
+              console.log('-------------fin query');
+            });
+            console.log('-------------fin for');
+          }
+          console.log('Tweets:');
+
+        });
+        var nichoseek = selectnicho.concat(nichocam, "';");
+        console.log(nichoseek);
+        mariaconn.query(nichoseek, function(err, result, fields) {
+          if (err) throw err;
+          console.log(err);
+          console.log(result);
+          nichotracery = result[0].json;
+          console.log(nichotracery);
+          console.log('Nicho Tracery path:');
+          console.log(nichotracery);
+          nicholeido = JSON.parse(fs.readFileSync(String(nichotracery), 'utf8'));
+          rawGrammar = nicholeido;
+          processedGrammar = tracery.createGrammar(rawGrammar);
+        });
+
+        insertcamp = sqlinsert.concat("campaign (nombre, nicho, descrip, propag, tipo, inicio, cuentas, fin) VALUES ('", nombrecam, "', '", nichocam, "', '", descripcam, "', '", algocam, "', 'Mass', '", inidate, "', 'TODAS', '", findate, "');");
+        console.log(insertcamp);
+        mariaconn.query(insertcamp, function(err, result, fields) {
+          if (err & err != "ER_DUP_ENTRY") {
+            throw err;
+            console.log(result);
+            resp.render('./newcamp', {
+              nichos: nichox,
+            });
+          } else {
+            console.log(err);
+            console.log(result);
+            console.log('campaña insertada');
+            resp.render('./newcamp', {
+              nichos: nichox,
+              twitters: twitterx
+            });
+          }
+          var selecpropag = selprop.concat(nichocam, "'");
+          console.log('selecpropag:');
+          console.log(selecpropag);
+          mariaconn.query(selecpropag, function(err, result, fields) {
+            if (err) throw err;
+            console.log("Error SQL:");
+            console.log(err);
+            console.log("Resultado SQL:");
+            console.log(result[0]);
+            console.log("Algoritmo de Propagación:");
+            nichotracery = result[0].propag;
+            console.log(nichotracery);
+
+            switch (algocam) {
+              case 1:
+                timerange = "*/60 */5 * * * *";
+                console.log('timerange');
+                console.log(timerange);
+                var job = new CronJob('*/60 */5 * * * *', function() {
+                  var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                  mariaconn.query(dtdfs, function(err, result, fields) {
+                    if (err) throw err;
+                    console.log(result);
+                    diffs = result[0].date_diff;
+                    console.log(diffs);
+                    for (var i = 0; i < counts; i++) {
+                      Tms = new Twit({
+                        consumer_key: APP_CONSUMER_KEY,
+                        consumer_secret: APP_CONSUMER_SECRET,
+                        access_token: ACCESS_TOKENx[i],
+                        access_token_secret: ACCESS_TOKEN_SECRETx[i]
+                      });
+                      console.log(Tms);
+                      tweet = processedGrammar.flatten("#origin#");
+                      console.log(tweet);
+                      Tms.post('statuses/update', {
+                        status: tweet
+                      }, function(err, data, response) {
+                        console.log(data);
+                      });
+                      console.log('Nicho expandido:');
+                      console.log(tweet);
+                    }
+                    if (diffs < 0) {
+                      console.log("Trabajo detenido");
+                      job.stop();
+                    }
+                  });
+                }, null, true, 'America/Mexico_City');
+                job.stop();
+                job.start();
+                break;
+              case 2:
+
+
+                timerange = "*/60 */9 * * * *";
+                console.log('timerange');
+                console.log(timerange);
+                var job = new CronJob('*/60 */9 * * * *', function() {
+
+                  var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                  mariaconn.query(dtdfs, function(err, result, fields) {
+                    if (err) throw err;
+                    console.log(result);
+                    diffs = result[0].date_diff;
+                    console.log(diffs);
+                    for (var i = 0; i < counts; i++) {
+                      Tms = new Twit({
+                        consumer_key: APP_CONSUMER_KEY,
+                        consumer_secret: APP_CONSUMER_SECRET,
+                        access_token: ACCESS_TOKENx[i],
+                        access_token_secret: ACCESS_TOKEN_SECRETx[i]
+                      });
+                      console.log(Tms);
+                      tweet = processedGrammar.flatten("#origin#");
+                      console.log(tweet);
+                      Tms.post('statuses/update', {
+                        status: tweet
+                      }, function(err, data, response) {
+                        console.log(data);
+                      });
+                      console.log('Nicho expandido:');
+                      console.log(tweet);
+                    }
+                    if (diffs < 0) {
+                      console.log("Trabajo detenido");
+                      job.stop();
+                    }
+                  });
+                }, null, true, 'America/Mexico_City');
+                job.stop();
+                job.start();
+
+                break;
+              case 3:
+
+                timerange = "*/60 */12 * * * *";
+                console.log('timerange');
+                console.log(timerange);
+                var job = new CronJob('*/60 */12 * * * *', function() {
+                  var dtdfs = datediffs.concat(findate, "','", new Date().toMysqlFormat(), "') as date_diff");
+                  mariaconn.query(dtdfs, function(err, result, fields) {
+                    if (err) throw err;
+                    console.log(result);
+                    diffs = result[0].date_diff;
+                    console.log(diffs);
+                    for (var i = 0; i < counts; i++) {
+                      Tms = new Twit({
+                        consumer_key: APP_CONSUMER_KEY,
+                        consumer_secret: APP_CONSUMER_SECRET,
+                        access_token: ACCESS_TOKENx[i],
+                        access_token_secret: ACCESS_TOKEN_SECRETx[i]
+                      });
+                      console.log(Tms);
+                      tweet = processedGrammar.flatten("#origin#");
+                      console.log(tweet);
+                      Tms.post('statuses/update', {
+                        status: tweet
+                      }, function(err, data, response) {
+                        console.log(data);
+                      });
+                      console.log('Nicho expandido:');
+                      console.log(tweet);
+                    }
+                    if (diffs < 0) {
+                      console.log("Trabajo detenido");
+                      job.stop();
+                    }
+                  });
+                }, null, true, 'America/Mexico_City');
+                job.stop();
+                job.start();
+                break;
+            }
+          });
+        });
+
+        mariaconn.query("SELECT nombre, nicho, propag, tipo, inicio, cuentas, fin FROM campaign", function(err, result, fields) {
+          if (err) throw err;
+          console.log("Consulta campañas:");
+          console.log(result);
+          campaignx = result;
+        });
+        console.log('Cons cmpaña pedida');
       });
     }
   });

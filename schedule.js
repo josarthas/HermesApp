@@ -3,7 +3,7 @@
 
 var mysql = require('mysql'); // Servidor CentOS, usamos mysql innodb
 var CronJob = require('cron').CronJob; //para definir intervalos de tiempo de algoritmos de tendencias
-var express = require('express'); //servidor web
+/*var express = require('express'); //servidor web
 const fileUpload = require('express-fileupload');
 var Twit = require('twit'); //Conexión a la API de Twitter, necesitamos crear esta conexión con los tokens creados automáticamente
 var token;
@@ -47,4 +47,11 @@ var T = new Twit({
   access_token: ACCESS_TOKEN,
   access_token_secret: ACCESS_TOKEN_SECRET
 });
-console.log(T);
+console.log(T);*/
+console.log('Pruebas cron');
+var job = new CronJob('*/60 */10 * * * *', function() {
+    console.log('Mensaje 10min');
+    console.log(new Date());
+  },
+  null, true, 'America/Mexico_City');
+job.start();

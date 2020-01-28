@@ -12,7 +12,7 @@ CREATE TABLE telefonos (
     company     VARCHAR(16),
     serie_sim   VARCHAR(20)
 );
-
+--Tabla para control de chips de las cuentas de twitter
 ALTER TABLE telefonos
     ADD CHECK ( company IN (
         'AT&T',
@@ -38,8 +38,7 @@ ALTER TABLE twitter ADD CONSTRAINT twitter_pk PRIMARY KEY ( usuario );
 CREATE TABLE usuarios (
     usuario    VARCHAR(16) NOT NULL,
     password   VARCHAR(6),
-    nombre     VARCHAR(64),
-    tipo       VARCHAR(5)
+    nombre     VARCHAR(64)
 );
 
 ALTER TABLE usuarios
