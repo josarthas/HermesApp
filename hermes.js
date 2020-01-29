@@ -217,11 +217,11 @@ app.post('/login', function(soli, resp) {
           console.log("Consulta nichos:");
           console.log(result);
           nichox = result;
-        });
-        console.log(nichox);
-        resp.render('./consultani', {
-          nichos: nichox
-        });
+          console.log(nichox);
+          resp.render('./consultani', {
+              nichos: nichox
+            }
+          }););
       });
       app.get('/telefonos', function(soli, resp) {
         console.log('Telefonos seleccionado');

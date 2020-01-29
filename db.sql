@@ -1,7 +1,7 @@
 CREATE TABLE nichos (
-    nicho     VARCHAR(12) NOT NULL,
+    nicho     VARCHAR(32) NOT NULL,
     json      VARCHAR(64),
-    resumen   VARCHAR(40)
+    resumen   VARCHAR(128)
 );
 ALTER TABLE nichos ADD CONSTRAINT nichos_pk PRIMARY KEY ( nicho );
 
@@ -51,7 +51,7 @@ ALTER TABLE usuarios ADD CONSTRAINT usuarios_pk PRIMARY KEY ( usuario );
 
 /*Nueva tabls campañas, insertar a Base de datos.*/
 CREATE TABLE campaign (
-    nombre    VARCHAR(32) NOT NULL,
+    nombre    VARCHAR(64) NOT NULL,
     nicho     VARCHAR(16),
     descrip   VARCHAR(64),
     propag    VARCHAR(8),
