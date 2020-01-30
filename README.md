@@ -37,4 +37,4 @@
 7. Inicia y entra a la aplicacion con tu nueva contraseña y usuario.
 8. Sube el script en el apartado "Nichos".
 9. Crea una nueva campaña en "Unitaria" o "Nueva".
-10.
+10. Observa el comportamiento de tu bot en twitter.
