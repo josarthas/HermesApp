@@ -5,8 +5,6 @@ CREATE TABLE nichos (
 );
 ALTER TABLE nichos ADD CONSTRAINT nichos_pk PRIMARY KEY ( nicho );
 
-
-
 CREATE TABLE telefonos (
     numero      VARCHAR(10),
     company     VARCHAR(16),

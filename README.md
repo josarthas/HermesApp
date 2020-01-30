@@ -2,8 +2,8 @@
 ## Sistema de Control de Múltiples cuentas Twitter.
 ### Desarrollado con Licencias MIT y GNU
 
-###Sistema Empresarial de control de cuentas de Twitter
-####(Granja de Bots)
+### Sistema Empresarial de control de cuentas de Twitter
+#### (Granja de Bots)
 
 1. No usar este programa para crear tendencias artificiales.
   - Bueno sí, pero no hagas que cancelen tu cuenta de desarrollador de twitter.
